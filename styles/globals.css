@@ -16,7 +16,7 @@
   font-weight: 200;
   font-style: italic;
 }
-
+/* 
 @font-face {
   font-family: 'BigDailyTrial';
   src: url('fonts/bigdailyshortweb-semilight-TRIAL.woff') format('woff'),
@@ -118,7 +118,7 @@
   src: url('fonts/VictorSerifTrial-BlackItalic.otf') format('opentype');
   font-weight: 900;
   font-style: italic;
-}
+} */
 
 /*
   Josh's Custom CSS Reset
@@ -159,7 +159,7 @@ p, h1, h2, h3, h4, h5, h6 {
 html,
 body {
   font-family: 'Self Modern Trial', 'BigDailyTrial', sans-serif;
-  font-size: max(16px, 2vw);
+  font-size: max(20px, 2vw);
   font-weight: 400;
   /* font-variation-settings: "wght" 250,"ital" 0,"SRFF" 50; */
 }
