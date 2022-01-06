@@ -5,7 +5,7 @@ import Project from '../components/project';
 import { styled } from '../stiches.config';
 
 const Home = ({ projects }) => {
-  console.log(projects);
+  // console.log(projects);
   return (
     <div>
       <Head>
