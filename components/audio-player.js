@@ -108,7 +108,11 @@ const Track = ({
           >
             {isPlaying ? `PAUSE` : `PLAY`}
           </PlayPause>
-          {loaded ? `${trackTime.m}:${trackTime.s}` : <LoadingAnim />}
+          {loaded ? (
+            <span>{`${trackTime.m}:${trackTime.s}`}</span>
+          ) : (
+            <LoadingAnim />
+          )}
         </TrackTitle>
         <SeekerBox
           className="seeker-container"

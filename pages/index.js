@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { getPageData } from '../lib/airtable-data';
 import Project from '../components/project';
 import { styled } from '../stiches.config';
+import LoadingAnim from '../components/loading-spinner';
 
 const Home = ({ projects }) => {
   // console.log(projects);
@@ -22,7 +23,6 @@ const Home = ({ projects }) => {
           <H1>Firas Abou Fakher</H1>
           <Tags>
             <H2>Composer</H2>
-
             <Dot />
             <H2>Producer</H2>
             <Dot />

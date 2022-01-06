@@ -26,15 +26,24 @@ const Project = ({ project }) => {
           )}
         </Thumb>
 
-        {/* <div> */}
-        <div dangerouslySetInnerHTML={{ __html: description }} />
-        {/* <p style={{ fontStyle: `italic` }}>{project.date}</p> */}
-        {/* </div> */}
+        <div>
+          <div dangerouslySetInnerHTML={{ __html: description }} />
+          {/* <p style={{ fontStyle: `italic` }}>{project.date}</p> */}
+          <Tags>
+            {tags.map((tag, idx) => (
+              <>
+                <Tag key={`tag-${project.__id}-${idx}`}>{tag}</Tag>
+                {/* {idx + 1 < tags.length && (
+                  <DotBox>
+                    <Dot />
+                  </DotBox>
+                )} */}
+              </>
+            ))}
+          </Tags>
+        </div>
       </ProjectInfo>
       {tracks && <Tracks tracklist={tracks} />}
-      {/* {tags.map((tag, idx) => (
-        <div key={`tag-${project.__id}-${idx}`}>{tag}</div>
-      ))} */}
     </ProjectContainer>
   );
 };
@@ -67,6 +76,7 @@ const Title = styled(`h2`, {
   textTransform: `uppercase`,
   fontSize: `2rem`,
   textAlign: `center`,
+  letterSpacing: `-0.05em`,
 });
 
 const Subtitle = styled(`h4`, {
@@ -81,4 +91,34 @@ const Thumb = styled(`div`, {
   '& > *': {
     position: `relative`,
   },
+});
+
+const Tag = styled(`span`, {
+  textTransform: `uppercase`,
+  fontSize: `0.6rem`,
+  letterSpacing: `0.05em`,
+  fontWeight: `500`,
+  padding: `0.25em 0.75em`,
+  border: `0.5px solid black`,
+  borderRadius: `100em`,
+  marginRight: `0.25rem`,
+});
+
+const Tags = styled(`div`, {
+  display: `flex`,
+  flexDirection: `row`,
+  alignItems: `center`,
+  marginTop: `1rem`,
+});
+
+const Dot = styled(`div`, {
+  width: `0.05rem`,
+  height: `0.35rem`,
+  background: `black`,
+  transformOrigin: `center`,
+  transform: `rotate(45deg)`,
+});
+
+const DotBox = styled(`div`, {
+  padding: `0 0.5rem`,
 });
