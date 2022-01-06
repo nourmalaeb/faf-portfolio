@@ -4,7 +4,7 @@ import { getPageData } from '../lib/airtable-data';
 import Project from '../components/project';
 import { styled } from '../stiches.config';
 
-const Home = ({ pageData }) => {
+const Home = ({ projects }) => {
   return (
     <div>
       <Head>
@@ -24,11 +24,11 @@ const Home = ({ pageData }) => {
             <H2>Producer</H2>
             <H2>Director</H2>
           </Tags>
-          <H2 style={{ margin: `1rem 0 0 0` }}>About</H2>
+          {/* <H2 style={{ margin: `1rem 0 0 0` }}>About</H2> */}
         </Header>
 
         <Projects>
-          {pageData.map((item, idx) => (
+          {projects.map((item, idx) => (
             <Project project={item} key={`project-${idx}`} />
           ))}
         </Projects>
@@ -47,12 +47,13 @@ const Header = styled(`header`, {
 });
 
 const H1 = styled(`h1`, {
-  fontWeight: '200',
+  fontWeight: '100',
   fontStyle: 'normal',
   margin: `0 0 1rem 0`,
-  fontSize: `2rem`,
+  fontSize: `5rem`,
   textTransform: `uppercase`,
-  lineHeight: 1,
+  lineHeight: 0.85,
+  letterSpacing: `-0.05em`,
   textAlign: `center`,
 });
 
@@ -81,10 +82,10 @@ const Projects = styled(`section`, {
 });
 
 export const getStaticProps = async () => {
-  const pageData = await getPageData('Projects', 'Grid view');
+  const projects = await getPageData('Projects', 'Grid view');
   return {
     props: {
-      pageData,
+      projects,
     },
   };
 };

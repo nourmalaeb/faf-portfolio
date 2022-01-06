@@ -165,20 +165,6 @@ const Track = ({
     // interrupt: true,
   });
 
-  useEffect(() => {
-    resetTrackTime();
-  }, [duration]);
-
-  useEffect(() => {
-    isPlaying ? play() : pause();
-  }, [isPlaying]);
-
-  useInterval(() => {
-    if (isPlaying) {
-      updateTrackTime();
-    }
-  }, 10);
-
   const resetTrackTime = () => {
     setTrackTime({
       m: Math.floor((duration * 0.001) / 60)
@@ -222,6 +208,20 @@ const Track = ({
     seekTrack(e);
     setSeeking(false);
   };
+
+  useEffect(() => {
+    resetTrackTime();
+  }, [duration]);
+
+  useEffect(() => {
+    isPlaying ? play() : pause();
+  }, [isPlaying]);
+
+  useInterval(() => {
+    if (isPlaying) {
+      updateTrackTime();
+    }
+  }, 10);
 
   return (
     <>
@@ -302,6 +302,7 @@ const PlayPause = styled(`button`, {
   textAlign: `center`,
   opacity: 0,
   transition: `opacity 0.1s ease`,
+  color: `black`,
   '&:hover': {
     opacity: 1,
   },
@@ -360,6 +361,7 @@ const Tracks = ({ tracklist }) => {
 
   return (
     <Tracklist>
+      <H3>Tracks</H3>
       {tracklist.map((track, idx) => (
         <Track
           track={track}
@@ -381,4 +383,8 @@ export default Tracks;
 
 const Tracklist = styled(`div`, {
   marginY: `2rem`,
+});
+
+const H3 = styled(`h3`, {
+  marginBottom: `0.5rem`,
 });

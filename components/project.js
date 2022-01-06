@@ -7,29 +7,33 @@ const Project = ({ project }) => {
   const { title, subtitle, description, tracks, tags } = project;
   return (
     <ProjectContainer>
-      <Thumb>
-        {project.thumbnail[0].type.includes(`image`) && (
-          <Image
-            src={thumbnail.url}
-            alt={project.title}
-            layout="fill"
-            objectFit="contain"
-          />
-        )}
-        {thumbnail.type.includes(`video`) && (
-          <video src={thumbnail.url} controls playsInline />
-        )}
-      </Thumb>
-      <div>
-        <Title>{title}</Title>
-        <Subtitle>{subtitle}</Subtitle>
-        <p>{description}</p>
+      <Title>{title}</Title>
+      <Subtitle>{subtitle}</Subtitle>
+      <ProjectInfo>
+        <Thumb>
+          {project.thumbnail[0].type.includes(`image`) && (
+            <Image
+              src={thumbnail.url}
+              alt={project.title}
+              layout="fill"
+              objectFit="contain"
+              objectPosition={`top left`}
+            />
+          )}
+          {thumbnail.type.includes(`video`) && (
+            <video src={thumbnail.url} controls playsInline />
+          )}
+        </Thumb>
+
+        {/* <div> */}
+        <div dangerouslySetInnerHTML={{ __html: description }} />
         {/* <p style={{ fontStyle: `italic` }}>{project.date}</p> */}
-        {tracks && <Tracks tracklist={tracks} />}
-      </div>
-      {tags.map((tag, idx) => (
+        {/* </div> */}
+      </ProjectInfo>
+      {tracks && <Tracks tracklist={tracks} />}
+      {/* {tags.map((tag, idx) => (
         <div key={`tag-${project.__id}-${idx}`}>{tag}</div>
-      ))}
+      ))} */}
     </ProjectContainer>
   );
 };
@@ -41,33 +45,39 @@ const ProjectContainer = styled(`div`, {
   width: `30rem`,
   display: `flex`,
   flexDirection: `column`,
-  alignItems: `center`,
-  margin: `0 auto 8rem auto`,
-  textAlign: `center`,
+  alignItems: `stretch`,
+  margin: `4rem auto 8rem auto`,
   maxWidth: `100%`,
+});
+
+const ProjectInfo = styled(`div`, {
+  display: `grid`,
+  gridTemplateColumns: `1fr`,
+  gap: `1rem`,
+  '@bp1': {
+    gridTemplateColumns: `1fr 3fr`,
+  },
+  '& p': {
+    marginBottom: `0.5rem`,
+  },
 });
 
 const Title = styled(`h2`, {
   textTransform: `uppercase`,
   fontSize: `2rem`,
   textAlign: `center`,
-  marginY: `1rem`,
 });
 
 const Subtitle = styled(`h4`, {
   fontStyle: `italic`,
-  marginY: `1rem`,
+  marginBottom: `1rem`,
+  textAlign: `center`,
 });
 
 const Thumb = styled(`div`, {
   position: `relative`,
-  height: '500px',
-  minHeight: `5rem`,
-  maxHeight: `90vh`,
   width: `100%`,
   '& > *': {
     position: `relative`,
-    height: `100%`,
-    margin: `0 auto`,
   },
 });
