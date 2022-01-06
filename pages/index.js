@@ -1,10 +1,10 @@
-import Head from 'next/head'
-import Image from 'next/image';
-import { items } from '../components/data';
-import Tracklist from '../components/audio-player';
+import Head from 'next/head';
+// import { items } from '../components/data';
+import { getPageData } from '../lib/airtable-data';
+import Project from '../components/project';
+import { styled } from '../stiches.config';
 
-export default function Home() {
-  // console.log(items);
+const Home = ({ pageData }) => {
   return (
     <div>
       <Head>
@@ -17,72 +17,74 @@ export default function Home() {
       </Head>
 
       <main style={{ position: 'relative' }}>
-        <header style={{ position: `fixed`, zIndex: `3` }}>
-          <h1
-            style={{
-              fontWeight: '200',
-              fontStyle: 'normal',
-              margin: `0 0 1rem 0`,
-            }}
-          >
-            Firas Abou Fakher
-          </h1>
-          <h2>Composer</h2>
-          <h2>Producer</h2>
-          <h2>Director</h2>
-          <h2 style={{ margin: `1rem 0 0 0` }}>About</h2>
-        </header>
+        <Header>
+          <H1>Firas Abou Fakher</H1>
+          <Tags>
+            <H2>Composer</H2>
+            <H2>Producer</H2>
+            <H2>Director</H2>
+          </Tags>
+          <H2 style={{ margin: `1rem 0 0 0` }}>About</H2>
+        </Header>
 
-        <div style={{ position: `relative`, padding: `4rem 0` }}>
-          {items.map((item, idx) => (
-            <article
-              style={{
-                position: `relative`,
-                width: `30rem`,
-                minWidth: `500px`,
-                display: 'grid',
-                gridTemplateColumns: `1fr 2fr`,
-                gap: `1rem`,
-                margin: `0 0 8rem 0`,
-                left: `${((idx + 3) % 4) * 4 + 4}rem`,
-              }}
-              key={`${item.id}`}
-            >
-              <div
-                style={{
-                  position: `relative`,
-                  width: `100%`,
-                  aspectRatio: `1`,
-                }}
-              >
-                {item.media.type === `poster` && (
-                  <Image
-                    src={item.media.src}
-                    alt={item.title}
-                    layout="fill"
-                    objectFit="cover"
-                  />
-                )}
-                {item.media.type === `video` && (
-                  <video src={item.media.src} style={{ width: `100%` }} />
-                )}
-              </div>
-              <div>
-                <h3>{item.title}</h3>
-                <h4 style={{ fontStyle: `italic` }}>{item.subtitle}</h4>
-                <p>{item.blurb}</p>
-                <p style={{ fontStyle: `italic` }}>{item.date}</p>
-                {item.tracklist && (
-                  <div>
-                    <h4>Tracklist:</h4>
-                    <Tracklist tracklist={item.tracklist} />
-                  </div>
-                )}
-              </div>
-            </article>
+        <Projects>
+          {pageData.map((item, idx) => (
+            <Project project={item} key={`project-${idx}`} />
           ))}
-        </div>
+        </Projects>
       </main>
     </div>
   );
-}
+};
+
+export default Home;
+
+const Header = styled(`header`, {
+  position: `relative`,
+  zIndex: `3`,
+  width: `100vw`,
+  padding: `3rem`,
+});
+
+const H1 = styled(`h1`, {
+  fontWeight: '200',
+  fontStyle: 'normal',
+  margin: `0 0 1rem 0`,
+  fontSize: `2rem`,
+  textTransform: `uppercase`,
+  lineHeight: 1,
+  textAlign: `center`,
+});
+
+const Tags = styled(`div`, {
+  display: `flex`,
+  width: `100%`,
+  justifyContent: `space-around`,
+  flexDirection: `column`,
+  '@bp1': {
+    flexDirection: `row`,
+  },
+});
+
+const H2 = styled(`h2`, {
+  fontWeight: '200',
+  fontStyle: 'normal',
+  fontSize: `2rem`,
+  textTransform: `uppercase`,
+  lineHeight: 1,
+  textAlign: `center`,
+});
+
+const Projects = styled(`section`, {
+  position: `relative`,
+  padding: `1rem`,
+});
+
+export const getStaticProps = async () => {
+  const pageData = await getPageData('Projects', 'Grid view');
+  return {
+    props: {
+      pageData,
+    },
+  };
+};

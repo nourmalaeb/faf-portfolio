@@ -16,27 +16,27 @@ export const items = [
     tracklist: [
       {
         title: `Intro`,
-        src: `/audio/igd/intro.mp3`,
+        src: `/audio/igd/01-intro.mp3`,
       },
       {
         title: `Noon`,
-        src: `/audio/igd/noon.mp3`,
+        src: `/audio/igd/02-noon.mp3`,
       },
       {
         title: `Dusk`,
-        src: `/audio/igd/dusk.mp3`,
+        src: `/audio/igd/03-dusk.mp3`,
       },
       {
         title: `Midnight is the Longest of the Nights`,
-        src: `/audio/igd/midnight.mp3`,
+        src: `/audio/igd/04-midnight.mp3`,
       },
       {
         title: `Dawn`,
-        src: `/audio/igd/dawn.mp3`,
+        src: `/audio/igd/05-dawn.mp3`,
       },
       {
         title: `Credits`,
-        src: `/audio/igd/credits.mp3`,
+        src: `/audio/igd/06-credits.mp3`,
       },
     ],
   },
