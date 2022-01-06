@@ -15,9 +15,8 @@ const Project = ({ project }) => {
             <Image
               src={thumbnail.url}
               alt={project.title}
-              layout="fill"
-              objectFit="contain"
-              objectPosition={`top left`}
+              width={thumbnail.width}
+              height={thumbnail.height}
             />
           )}
           {thumbnail.type.includes(`video`) && (

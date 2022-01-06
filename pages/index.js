@@ -43,14 +43,17 @@ const Header = styled(`header`, {
   position: `relative`,
   zIndex: `3`,
   width: `100vw`,
-  padding: `3rem`,
+  padding: `3rem 0.5rem`,
+  '@bp1': {
+    padding: `3rem 5rem`,
+  },
 });
 
 const H1 = styled(`h1`, {
   fontWeight: '100',
   fontStyle: 'normal',
   margin: `0 0 1rem 0`,
-  fontSize: `5rem`,
+  fontSize: `4rem`,
   textTransform: `uppercase`,
   lineHeight: 0.85,
   letterSpacing: `-0.05em`,
@@ -70,7 +73,6 @@ const Tags = styled(`div`, {
 const H2 = styled(`h2`, {
   fontWeight: '200',
   fontStyle: 'normal',
-  fontSize: `2rem`,
   textTransform: `uppercase`,
   lineHeight: 1,
   textAlign: `center`,
