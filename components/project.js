@@ -20,7 +20,14 @@ const Project = ({ project }) => {
             />
           )}
           {thumbnail.type.includes(`video`) && (
-            <video src={thumbnail.url} controls playsInline />
+            <video>
+              <source
+                src={thumbnail.url}
+                controls
+                playsInline
+                type={thumbnail.type}
+              />
+            </video>
           )}
         </Thumb>
 
