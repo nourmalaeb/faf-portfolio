@@ -1,11 +1,16 @@
 .track-box {
   position: relative;
   display: grid;
-  grid-template-columns: 3fr 2fr;
+  grid-template-columns: 4fr 1fr 1fr;
   gap: 0.5em;
   transition: opacity 0.2s ease;
+  align-items: center;
   &:hover {
     opacity: 1;
+  }
+
+  @media (min-width: 768px) {
+    grid-template-columns: 3fr 1fr 2fr;
   }
 }
 
@@ -17,6 +22,10 @@
   align-items: center;
   padding-top: 0.25em;
   padding-bottom: 0.25em;
+}
+
+.track-time {
+  text-align: right;
 }
 
 .play-pause {
@@ -33,6 +42,7 @@
   opacity: 0;
   transition: opacity 0.1s ease;
   color: black;
+  cursor: pointer;
   &:hover {
     opacity: 1;
   }
@@ -46,7 +56,9 @@
   top: 50%;
   transform: translate(-50%, -50%);
   pointer-events: none;
-  transition: all 0.075s ease;
+  transition:
+    width 0.075s ease,
+    height 0.075s ease;
 }
 
 .seeker-box {
@@ -56,7 +68,9 @@
   &:hover .seeker {
     width: 1px;
     height: 100%;
-    transition: all 0.075s ease;
+    transition:
+      width 0.075s ease,
+      height 0.075s ease;
   }
 }
 

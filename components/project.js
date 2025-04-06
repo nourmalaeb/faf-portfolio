@@ -2,34 +2,34 @@
 
 import Image from 'next/image';
 import Tracks from './audio-player';
+import { PortableText } from '@portabletext/react';
 import './project.css';
+import { urlFor } from '../sanity/lib/image';
 
 const Project = ({ project }) => {
-  const thumbnail = project.thumbnail[0];
-  const { title, subtitle, description, tracks, tags } = project;
+  console.log(project);
+  const { title, subtitle, thumbnail, description, tracks, tags } = project;
   return (
     <div className="project-container">
+      <div className="thumb">
+        {project.thumbnail._type.includes(`image`) && (
+          <Image
+            src={urlFor(thumbnail).width(1000).url()}
+            alt={project.title}
+            fill
+          />
+        )}
+        {thumbnail._type.includes(`video`) && (
+          <video controls playsInline>
+            <source src={`${thumbnail.url}#t=0.001`} type={thumbnail.type} />
+          </video>
+        )}
+      </div>
       <h2 className="title">{title}</h2>
       <h4 className="subtitle">{subtitle}</h4>
       <div className="project-info">
-        <div className="thumb">
-          {project.thumbnail[0].type.includes(`image`) && (
-            <Image
-              src={thumbnail.url}
-              alt={project.title}
-              width={thumbnail.width}
-              height={thumbnail.height}
-            />
-          )}
-          {thumbnail.type.includes(`video`) && (
-            <video controls playsInline>
-              <source src={`${thumbnail.url}#t=0.001`} type={thumbnail.type} />
-            </video>
-          )}
-        </div>
-
         <div>
-          <div dangerouslySetInnerHTML={{ __html: description }} />
+          <PortableText value={description} />
           {/* <p style={{ fontStyle: `italic` }}>{project.date}</p> */}
           <div className="project-tags">
             {tags.map((tag, idx) => (

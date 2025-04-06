@@ -19,7 +19,7 @@ const Track = ({
   const [seeking, setSeeking] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  const trackSrc = track.file[0].url;
+  const trackSrc = track.url;
   const trackTitle = track.title;
 
   const [play, { pause, duration, sound }] = useSound(trackSrc, {
@@ -49,6 +49,7 @@ const Track = ({
 
   const updateTrackTime = () => {
     const prog = sound.seek();
+    // console.log(prog);
     setTrackProgress((prog * 1000) / duration);
     const mins = Math.floor(prog / 60);
     const secs = Math.floor(prog % 60);
@@ -98,11 +99,11 @@ const Track = ({
     <>
       <div
         className="track-divider"
-        css={{ opacity: isPlaying ? 0.5 : nonePlaying ? 1 : 0.5 }}
+        style={{ opacity: isPlaying ? 0.5 : nonePlaying ? 1 : 0.5 }}
       />
       <div
         className="track-box"
-        css={{ opacity: isPlaying ? 1 : nonePlaying ? 1 : 0.5 }}
+        style={{ opacity: isPlaying ? 1 : nonePlaying ? 1 : 0.5 }}
       >
         <div className="track-title">
           <h5>{trackTitle}</h5>
@@ -111,16 +112,16 @@ const Track = ({
             type="button"
             aria-label="play/pause"
             onClick={playPause}
-            // css={{ opacity: isPlaying ? 0.5 : 0 }}
+            // style={{ opacity: isPlaying ? 0.5 : 0 }}
           >
             {isPlaying ? `PAUSE` : `PLAY`}
           </button>
-          {loaded ? (
-            <span>{`${trackTime.m}:${trackTime.s}`}</span>
-          ) : (
-            <LoadingAnim />
-          )}
         </div>
+        {loaded ? (
+          <span className="track-time">{`${trackTime.m}:${trackTime.s}`}</span>
+        ) : (
+          <LoadingAnim />
+        )}
         <div
           className="seeker-box seeker-container"
           onMouseDown={seekStart}
@@ -140,7 +141,7 @@ const Track = ({
           />
           <div
             className="seeker"
-            css={{
+            style={{
               left: `${trackProgress * 100}%`,
             }}
           />
@@ -188,7 +189,7 @@ const Tracks = ({ tracklist }) => {
           incrementIndex={() => incrementIndex(idx)}
         />
       ))}
-      <div className="track-divider" css={{ opacity: isPlaying ? 0.3 : 1 }} />
+      <div className="track-divider" style={{ opacity: isPlaying ? 0.3 : 1 }} />
     </div>
   );
 };
