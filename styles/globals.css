@@ -130,13 +130,16 @@
   Josh's Custom CSS Reset
   https://www.joshwcomeau.com/css/custom-css-reset/
 */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 * {
   margin: 0;
 }
-html, body {
+html,
+body {
   height: 100%;
 }
 body {
@@ -144,17 +147,24 @@ body {
   margin: 0;
   -webkit-font-smoothing: antialiased;
 }
-img, picture, video, canvas, svg {
-  display: block;
-  max-width: 100%;
-}
-input, button, textarea, select {
+
+input,
+button,
+textarea,
+select {
   font: inherit;
 }
-p, h1, h2, h3, h4, h5, h6 {
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   overflow-wrap: break-word;
 }
-#root, #__next {
+#root,
+#__next {
   isolation: isolate;
 }
 
@@ -162,21 +172,18 @@ p, h1, h2, h3, h4, h5, h6 {
   Global styles
 */
 
-html,
-body {
-  font-family: 'Self Modern Trial', 'BigDailyTrial', sans-serif;
-  font-size: max(20px, 2vw);
-  font-weight: 400;
-  /* font-variation-settings: "wght" 250,"ital" 0,"SRFF" 50; */
-  letter-spacing: -0.0125em;
-}
-
 a {
   color: inherit;
   text-decoration: none;
 }
 
-h1, h2, h3, h4, h5, h6, p {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
   font-weight: 400;
   margin: 0;
   padding: 0;

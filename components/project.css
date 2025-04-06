@@ -1,0 +1,60 @@
+.project-container {
+  position: relative;
+  width: 30rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin: 4rem auto 8rem auto;
+  max-width: 100%;
+}
+
+.project-info {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  bp1 {
+    grid-template-columns: 1fr 3fr;
+  }
+  & p {
+    margin-bottom: 0.5rem;
+  }
+}
+
+.title {
+  text-transform: uppercase;
+  font-size: 2rem;
+  text-align: center;
+  letter-spacing: -0.05em;
+}
+
+.subtitle {
+  font-style: italic;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.thumb {
+  position: relative;
+  width: 100%;
+  & > * {
+    position: relative;
+  }
+}
+
+.tag {
+  text-transform: uppercase;
+  font-size: 0.6rem;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+  padding: 0.25em 0.75em;
+  border: 0.5px solid black;
+  border-radius: 100em;
+  margin-right: 0.25rem;
+}
+
+.project-tags {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 1rem;
+}

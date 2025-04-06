@@ -1,7 +1,9 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import useSound from 'use-sound';
 import { useInterval } from './utils/hooks';
-import { styled } from '../stiches.config';
+import './audio-player.css';
 import LoadingAnim from './loading-spinner';
 
 const Track = ({
@@ -66,13 +68,13 @@ const Track = ({
     }
   };
 
-  const seekStart = (e) => {
+  const seekStart = e => {
     isPlaying && pause();
     setSeeking(true);
     seekTrack(e, true);
   };
 
-  const seekEnd = (e) => {
+  const seekEnd = e => {
     isPlaying && play();
     seekTrack(e);
     setSeeking(false);
@@ -94,28 +96,33 @@ const Track = ({
 
   return (
     <>
-      <TrackDivider
+      <div
+        className="track-divider"
         css={{ opacity: isPlaying ? 0.5 : nonePlaying ? 1 : 0.5 }}
       />
-      <TrackBox css={{ opacity: isPlaying ? 1 : nonePlaying ? 1 : 0.5 }}>
-        <TrackTitle>
+      <div
+        className="track-box"
+        css={{ opacity: isPlaying ? 1 : nonePlaying ? 1 : 0.5 }}
+      >
+        <div className="track-title">
           <h5>{trackTitle}</h5>
-          <PlayPause
+          <button
+            className="play-pause"
             type="button"
             aria-label="play/pause"
             onClick={playPause}
             // css={{ opacity: isPlaying ? 0.5 : 0 }}
           >
             {isPlaying ? `PAUSE` : `PLAY`}
-          </PlayPause>
+          </button>
           {loaded ? (
             <span>{`${trackTime.m}:${trackTime.s}`}</span>
           ) : (
             <LoadingAnim />
           )}
-        </TrackTitle>
-        <SeekerBox
-          className="seeker-container"
+        </div>
+        <div
+          className="seeker-box seeker-container"
           onMouseDown={seekStart}
           onMouseMove={seekTrack}
           onMouseUp={seekEnd}
@@ -131,83 +138,17 @@ const Track = ({
               transform: `translateY(-50%)`,
             }}
           />
-          <Seeker
+          <div
+            className="seeker"
             css={{
               left: `${trackProgress * 100}%`,
             }}
           />
-        </SeekerBox>
-      </TrackBox>
+        </div>
+      </div>
     </>
   );
 };
-
-const TrackBox = styled(`div`, {
-  position: `relative`,
-  display: `grid`,
-  gridTemplateColumns: `3fr 2fr`,
-  gap: `0.5rem`,
-  transition: `opacity 0.2s ease`,
-  '&:hover': {
-    opacity: 1,
-  },
-});
-
-const TrackTitle = styled(`div`, {
-  position: `relative`,
-  display: `flex`,
-  flexDirection: `row`,
-  justifyContent: `space-between`,
-  alignItems: `center`,
-  paddingY: `0.25rem`,
-});
-
-const PlayPause = styled(`button`, {
-  background: `rgba(255, 255, 255, 0.9)`,
-  position: `absolute`,
-  top: `0`,
-  left: `0`,
-  width: `100%`,
-  height: `100%`,
-  border: `none`,
-  zIndex: `2`,
-  padding: `0.25rem 0`,
-  textAlign: `center`,
-  opacity: 0,
-  transition: `opacity 0.1s ease`,
-  color: `black`,
-  '&:hover': {
-    opacity: 1,
-  },
-});
-
-const Seeker = styled(`div`, {
-  position: `absolute`,
-  width: `2px`,
-  height: `0.5rem`,
-  background: `black`,
-  top: `50%`,
-  transform: `translate(-50%, -50%)`,
-  pointerEvents: `none`,
-  transition: `all 0.075s ease`,
-});
-
-const SeekerBox = styled(`div`, {
-  position: `relative`,
-  width: `100%`,
-  height: `100%`,
-  [`&:hover ${Seeker}`]: {
-    width: `1px`,
-    height: `100%`,
-    transition: `all 0.075s ease`,
-  },
-});
-
-const TrackDivider = styled(`div`, {
-  width: `100%`,
-  height: 0,
-  borderTop: `0.25px solid black`,
-});
 
 const Tracks = ({ tracklist }) => {
   const [trackIndex, setTrackIndex] = useState(0);
@@ -222,7 +163,7 @@ const Tracks = ({ tracklist }) => {
     }
   };
 
-  const incrementIndex = (i) => {
+  const incrementIndex = i => {
     if (i < tracklist.length) {
       setTrackIndex(i + 1);
       setIsPlaying(true);
@@ -233,8 +174,8 @@ const Tracks = ({ tracklist }) => {
   };
 
   return (
-    <Tracklist>
-      <H3>Tracks</H3>
+    <div className="tracklist">
+      <h3 className="h3">Tracks</h3>
       {tracklist.map((track, idx) => (
         <Track
           track={track}
@@ -242,22 +183,14 @@ const Tracks = ({ tracklist }) => {
           isActive={trackIndex === idx}
           isPlaying={isPlaying && trackIndex === idx}
           nonePlaying={!isPlaying}
-          playPause={(e) => playPause(e, idx)}
+          playPause={e => playPause(e, idx)}
           setIsPlaying={setIsPlaying}
           incrementIndex={() => incrementIndex(idx)}
         />
       ))}
-      <TrackDivider css={{ opacity: isPlaying ? 0.3 : 1 }} />
-    </Tracklist>
+      <div className="track-divider" css={{ opacity: isPlaying ? 0.3 : 1 }} />
+    </div>
   );
 };
 
 export default Tracks;
-
-const Tracklist = styled(`div`, {
-  marginY: `2rem`,
-});
-
-const H3 = styled(`h3`, {
-  marginBottom: `0.5rem`,
-});
