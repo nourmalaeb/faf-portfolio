@@ -2,7 +2,7 @@ import '../styles/globals.css';
 import styles from './app.module.css';
 
 export const metadata = {
-  title: 'Firas Abou Fakher • Composer • Producer',
+  title: 'Firas Abou Fakher • Composer • Producer • Director',
   description: 'Firas Abou Fakher is a multi-hyphenate',
 };
 
