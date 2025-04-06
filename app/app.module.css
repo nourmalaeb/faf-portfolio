@@ -4,4 +4,5 @@
   font-weight: 400;
   /* font-variation-settings: "wght" 250,"ital" 0,"SRFF" 50; */
   letter-spacing: -0.0125em;
+  overflow-x: hidden;
 }

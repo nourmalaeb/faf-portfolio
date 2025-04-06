@@ -7,7 +7,7 @@ import './project.css';
 import { urlFor } from '../sanity/lib/image';
 
 const Project = ({ project }) => {
-  console.log(project);
+  // console.log(project);
   const { title, subtitle, thumbnail, description, tracks, tags } = project;
   return (
     <div className="project-container">

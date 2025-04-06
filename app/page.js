@@ -7,7 +7,7 @@ export default async function Page() {
   // const projects = await getPageData('Projects', 'Grid view');
 
   const projectData = await client.fetch(projectsQuery);
-  console.log(projectData);
+  // console.log(projectData);
 
   return <Home projects={projectData} />;
 }

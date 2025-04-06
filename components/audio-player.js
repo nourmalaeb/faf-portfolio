@@ -124,9 +124,9 @@ const Track = ({
         )}
         <div
           className="seeker-box seeker-container"
-          onMouseDown={seekStart}
-          onMouseMove={seekTrack}
-          onMouseUp={seekEnd}
+          onPointerDown={seekStart}
+          onPointerMove={seekTrack}
+          onPointerUp={seekEnd}
         >
           <div
             style={{
