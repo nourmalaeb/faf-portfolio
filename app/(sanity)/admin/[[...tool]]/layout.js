@@ -1,5 +1,3 @@
-import styles from './sanity.module.css';
-
 export const metadata = {
   title: `Firas's content HQ`,
   description: 'Firas Abou Fakher is a multi-hyphenate',
@@ -7,7 +5,7 @@ export const metadata = {
 
 export default function SanityRootLayout({ children }) {
   return (
-    <html lang="en" className={styles.sanityRoot}>
+    <html lang="en">
       <body>{children}</body>
     </html>
   );

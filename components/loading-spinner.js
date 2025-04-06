@@ -1,13 +1,7 @@
-import { styled } from '../stiches.config';
-
-const Loader = styled('div', {
-  position: `relative`,
-  width: `2.75rem`,
-  height: `0.9rem`,
-});
+import './loading-spinner.css';
 
 const LoadingAnim = () => (
-  <Loader>
+  <div className="loading-spinner">
     <svg
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -25,7 +19,7 @@ const LoadingAnim = () => (
         ></animateTransform>
       </rect>
     </svg>
-  </Loader>
+  </div>
 );
 
 export default LoadingAnim;

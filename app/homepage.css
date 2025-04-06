@@ -2,14 +2,14 @@ header {
   position: relative;
   z-index: 3;
   width: 100vw;
-  padding: 3rem 0.5rem;
+  padding: 3em 0.5em;
 }
 
 h1 {
   font-weight: 100;
   font-style: normal;
-  margin: 0 0 1rem 0;
-  font-size: 4rem;
+  margin: 0 0 1em 0;
+  font-size: 4em;
   text-transform: uppercase;
   line-height: 0.85;
   letter-spacing: -0.05em;
@@ -37,8 +37,8 @@ h2 {
 }
 
 .dot {
-  width: 0.05rem;
-  height: 0.35rem;
+  width: 0.05em;
+  height: 0.35em;
   background: black;
   transform-origin: center;
   transform: rotate(45deg);
@@ -46,5 +46,5 @@ h2 {
 
 .projects {
   position: relative;
-  padding: 1rem;
+  padding: 1em;
 }

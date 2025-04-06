@@ -1,35 +1,35 @@
 .project-container {
   position: relative;
-  width: 30rem;
+  width: 30em;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  margin: 4rem auto 8rem auto;
+  margin: 4em auto 8em auto;
   max-width: 100%;
 }
 
 .project-info {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1rem;
+  gap: 1em;
   bp1 {
     grid-template-columns: 1fr 3fr;
   }
   & p {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.5em;
   }
 }
 
 .title {
   text-transform: uppercase;
-  font-size: 2rem;
+  font-size: 2em;
   text-align: center;
   letter-spacing: -0.05em;
 }
 
 .subtitle {
   font-style: italic;
-  margin-bottom: 1rem;
+  margin-bottom: 1em;
   text-align: center;
 }
 
@@ -43,18 +43,18 @@
 
 .tag {
   text-transform: uppercase;
-  font-size: 0.6rem;
+  font-size: 0.6em;
   letter-spacing: 0.05em;
   font-weight: 500;
   padding: 0.25em 0.75em;
   border: 0.5px solid black;
   border-radius: 100em;
-  margin-right: 0.25rem;
+  margin-right: 0.25em;
 }
 
 .project-tags {
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-top: 1rem;
+  margin-top: 1em;
 }
