@@ -1,6 +1,6 @@
 module.exports = {
   reactStrictMode: true,
   images: {
-    domains: ['dl.airtable.com'],
+    domains: ['v5.airtableusercontent.com'],
   },
 };
