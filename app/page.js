@@ -1,13 +1,11 @@
-// import { getPageData } from '../lib/airtable-data';
 import { client } from '../sanity/lib/client';
-import Home from './homepage';
-import { projectsQuery } from '../sanity/lib/queries';
+import { homepageQuery } from '../sanity/lib/queries';
+import HomePage from './homepage';
 
 export default async function Page() {
-  // const projects = await getPageData('Projects', 'Grid view');
+  const homePageData = await client.fetch(homepageQuery);
 
-  const projectData = await client.fetch(projectsQuery);
-  // console.log(projectData);
+  console.log(homePageData);
 
-  return <Home projects={projectData} />;
+  return <HomePage data={homePageData} />;
 }

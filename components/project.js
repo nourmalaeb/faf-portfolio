@@ -5,10 +5,12 @@ import Tracks from './audio-player';
 import { PortableText } from '@portabletext/react';
 import './project.css';
 import { urlFor } from '../sanity/lib/image';
+import Details from './details';
 
 const Project = ({ project }) => {
   // console.log(project);
-  const { title, subtitle, thumbnail, description, tracks, tags } = project;
+  const { title, subtitle, thumbnail, description, tracks, details, tags } =
+    project;
   return (
     <div className="project-container">
       <div className="thumb">
@@ -43,6 +45,7 @@ const Project = ({ project }) => {
           </div>
         </div>
       </div>
+      {details && details.length > 0 && <Details details={details} />}
       {tracks && <Tracks tracklist={tracks} />}
     </div>
   );

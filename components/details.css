@@ -1,0 +1,26 @@
+.details-container {
+  display: flex;
+  flex-direction: column;
+  border-top: 0.5px solid black;
+  margin-top: 1.5em;
+}
+
+.detail {
+  display: grid;
+  gap: 0.5em;
+  align-items: center;
+  grid-template-columns: 2fr 3fr;
+  padding: 0.5em 0;
+  border-bottom: 0.5px solid black;
+}
+
+.detail-header {
+  font-weight: 900;
+  font-style: normal;
+  /* text-transform: uppercase; */
+}
+
+.detail-body {
+  font-weight: 400;
+  font-style: normal;
+}

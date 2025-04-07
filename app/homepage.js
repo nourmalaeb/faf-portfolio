@@ -3,8 +3,9 @@
 import Project from '../components/project';
 import './homepage.css';
 
-const Home = ({ projects }) => {
+const HomePage = ({ data }) => {
   // console.log(projects);
+  const { projects } = data[0];
   return (
     <div>
       <main style={{ position: 'relative' }}>
@@ -30,4 +31,4 @@ const Home = ({ projects }) => {
   );
 };
 
-export default Home;
+export default HomePage;

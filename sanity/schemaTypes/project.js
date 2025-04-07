@@ -31,6 +31,21 @@ export default {
       of: [{ type: 'string' }],
     },
     {
+      name: 'details',
+      title: 'Details',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          name: 'detail',
+          fields: [
+            { type: 'string', name: 'header' },
+            { type: 'text', name: 'body' },
+          ],
+        },
+      ],
+    },
+    {
       name: 'tracks',
       title: 'Tracks',
       type: 'array',

@@ -92,6 +92,8 @@ const Track = ({
   useInterval(() => {
     if (isPlaying) {
       updateTrackTime();
+    } else if (trackProgress > 0.999) {
+      resetTrackTime();
     }
   }, 10);
 
