@@ -1,5 +1,7 @@
 'use client';
 
+import { OkHandIcon } from '@sanity/icons';
+
 /**
  * This configuration is used to for the Sanity Studio that’s mounted on the `/app/admin/[[...tool]]/page.jsx` route
  */
@@ -26,4 +28,5 @@ export default defineConfig({
     visionTool({ defaultApiVersion: apiVersion }),
   ],
   title: `Firas Abou Fakher CMS`,
+  icon: OkHandIcon,
 });
