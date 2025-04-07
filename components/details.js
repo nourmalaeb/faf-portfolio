@@ -5,10 +5,8 @@ const Details = ({ details }) => {
   return (
     <div className="details-container">
       {details.map(detail => (
-        <p className="detail">
-          <span className="detail-header" key={`details-${detail._key}`}>
-            {detail.header}{' '}
-          </span>
+        <p className="detail" key={`details-${detail._key}`}>
+          <span className="detail-header">{detail.header} </span>
           <span className="detail-body">{detail.body}</span>
         </p>
       ))}
