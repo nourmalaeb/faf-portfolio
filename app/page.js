@@ -5,7 +5,7 @@ import HomePage from './homepage';
 export default async function Page() {
   const homePageData = await client.fetch(homepageQuery);
 
-  console.log(homePageData);
+  // console.log(homePageData);
 
   return <HomePage data={homePageData} />;
 }

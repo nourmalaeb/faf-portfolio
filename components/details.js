@@ -1,7 +1,7 @@
 import './details.css';
 
 const Details = ({ details }) => {
-  console.log(details);
+  // console.log(details);
   return (
     <div className="details-container">
       {details.map(detail => (
