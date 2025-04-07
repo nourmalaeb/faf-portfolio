@@ -1,7 +1,6 @@
 'use client';
 
 import Project from '../components/project';
-import LoadingAnim from '../components/loading-spinner';
 import './homepage.css';
 
 const Home = ({ projects }) => {

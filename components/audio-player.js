@@ -180,7 +180,7 @@ const Tracks = ({ tracklist }) => {
       {tracklist.map((track, idx) => (
         <Track
           track={track}
-          key={track.__id}
+          key={track._key}
           isActive={trackIndex === idx}
           isPlaying={isPlaying && trackIndex === idx}
           nonePlaying={!isPlaying}

@@ -1,7 +1,7 @@
 .track-box {
   position: relative;
   display: grid;
-  grid-template-columns: 4fr 1fr 1fr;
+  grid-template-columns: 4fr auto 1fr;
   gap: 0.5em;
   transition: opacity 0.2s ease;
   align-items: center;
@@ -10,7 +10,7 @@
   }
 
   @media (min-width: 768px) {
-    grid-template-columns: 3fr 1fr 2fr;
+    grid-template-columns: 3fr auto 2fr;
   }
 }
 
@@ -26,6 +26,9 @@
 
 .track-time {
   text-align: right;
+  font-family: var(--font-mono);
+  font-size: 0.8em;
+  width: 5ch;
 }
 
 .play-pause {

@@ -27,13 +27,13 @@ h1 {
   }
 }
 
-h2 {
+.tags h2 {
   font-weight: 200;
   font-style: normal;
-  text-transform: uppercase;
   line-height: 1;
   text-align: center;
   padding: 0.25em;
+  text-transform: uppercase;
 }
 
 .dot {

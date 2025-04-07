@@ -33,7 +33,10 @@ const Project = ({ project }) => {
           {/* <p style={{ fontStyle: `italic` }}>{project.date}</p> */}
           <div className="project-tags">
             {tags.map((tag, idx) => (
-              <span className="tag" key={`tag-${project.__id}-${idx}`}>
+              <span
+                className="tag font-mono"
+                key={`tag-${project.__id}-${idx}`}
+              >
                 {tag}
               </span>
             ))}
