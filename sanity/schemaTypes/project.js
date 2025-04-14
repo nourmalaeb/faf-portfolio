@@ -9,6 +9,15 @@ export default {
       type: 'string',
     },
     {
+      name: 'slug',
+      title: 'Slug',
+      type: 'slug',
+      options: {
+        source: 'title',
+        maxLength: 96,
+      },
+    },
+    {
       name: 'subtitle',
       title: 'Subtitle',
       type: 'string',
@@ -55,7 +64,12 @@ export default {
           name: 'track',
           fields: [
             { type: 'string', name: 'title' },
-            { type: 'file', name: 'file' },
+            { type: 'file', name: 'mp3', title: 'MP3' },
+            {
+              type: 'file',
+              name: 'ogg',
+              description: 'Optional (open codec audio format)',
+            },
           ],
         },
       ],

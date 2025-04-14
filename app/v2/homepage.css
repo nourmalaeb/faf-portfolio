@@ -1,0 +1,50 @@
+header {
+  position: relative;
+  z-index: 3;
+  width: 100vw;
+  padding: 2em 0.5em;
+}
+
+h1 {
+  font-weight: 100;
+  font-style: normal;
+  margin: 0 0 1rem 0;
+  font-size: clamp(3.5em, calc(3.5em + 3vw), 5em);
+  text-transform: uppercase;
+  line-height: 0.85;
+  letter-spacing: -0.05em;
+  text-align: center;
+}
+
+.tags {
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: column;
+  @media (min-width: 768px) {
+    flex-direction: row;
+  }
+}
+
+.tags h2 {
+  font-weight: 200;
+  font-style: normal;
+  line-height: 1;
+  text-align: center;
+  padding: 0.25em;
+  text-transform: uppercase;
+}
+
+.dot {
+  width: 0.05em;
+  height: 0.35em;
+  background: black;
+  transform-origin: center;
+  transform: rotate(45deg);
+}
+
+.projects {
+  position: relative;
+  border-bottom: 1px solid black;
+}

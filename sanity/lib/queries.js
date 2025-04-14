@@ -2,7 +2,7 @@ import { groq } from 'next-sanity';
 
 export const allProjectsQuery = groq`*[_type == "project"] {
     ...,
-    tracks[] {..., "url": file.asset->url },
+    tracks[] {..., "mp3": mp3.asset->url, "ogg": ogg.asset->url },
   }
   `;
 
@@ -11,7 +11,7 @@ export const homepageQuery = groq`
     ...,
     projects[]-> {
       ...,
-      tracks[] {..., "url": file.asset->url },
+      tracks[] {..., "mp3": mp3.asset->url, "ogg": ogg.asset->url },
     }
   }
 `;

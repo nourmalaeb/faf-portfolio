@@ -1,3 +1,4 @@
+import '../styles/reset.css';
 import '../styles/globals.css';
 import styles from './app.module.css';
 import { body, mono } from './fonts';

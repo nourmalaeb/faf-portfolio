@@ -9,9 +9,11 @@
   display: grid;
   gap: 0.5em;
   align-items: center;
-  grid-template-columns: 2fr 3fr;
   padding: 0.5em 0;
   border-bottom: 0.5px solid black;
+  @media (min-width: 600px) {
+    grid-template-columns: 2fr 3fr;
+  }
 }
 
 .detail-header {

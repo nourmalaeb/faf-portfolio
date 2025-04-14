@@ -19,21 +19,20 @@ const Track = ({
   const [seeking, setSeeking] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  const trackSrc = track.url;
+  const trackSrc = [track.ogg, track.mp3];
   const trackTitle = track.title;
 
   const [play, { pause, duration, sound }] = useSound(trackSrc, {
+    preload: 'metadata',
+    html5: true,
+    // interrupt: true,
     onend: () => {
       setIsPlaying(false);
       incrementIndex();
-      setTrackProgress(0);
-      resetTrackTime();
     },
     onload: () => {
       setLoaded(true);
     },
-    html5: true,
-    // interrupt: true,
   });
 
   const resetTrackTime = () => {
@@ -92,8 +91,6 @@ const Track = ({
   useInterval(() => {
     if (isPlaying) {
       updateTrackTime();
-    } else if (trackProgress > 0.999) {
-      resetTrackTime();
     }
   }, 10);
 
@@ -101,11 +98,11 @@ const Track = ({
     <>
       <div
         className="track-divider"
-        style={{ opacity: isPlaying ? 0.5 : nonePlaying ? 1 : 0.5 }}
+        style={{ opacity: isPlaying ? 0.4 : nonePlaying ? 1 : 0.4 }}
       />
       <div
         className="track-box"
-        style={{ opacity: isPlaying ? 1 : nonePlaying ? 1 : 0.5 }}
+        style={{ opacity: isPlaying ? 1 : nonePlaying ? 1 : 0.4 }}
       >
         <div className="track-title">
           <h5>{trackTitle}</h5>
@@ -134,7 +131,7 @@ const Track = ({
             style={{
               position: `absolute`,
               width: `100%`,
-              height: `1.5px`,
+              height: isPlaying ? `2px` : `1.5px`,
               background: `black`,
               left: `0`,
               top: `50%`,
