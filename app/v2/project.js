@@ -56,4 +56,6 @@ const Project = forwardRef(({ project }, ref) => {
   );
 });
 
+Project.displayName = 'Project';
+
 export default Project;
