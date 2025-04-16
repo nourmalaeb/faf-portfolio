@@ -14,18 +14,16 @@ const Project = ({ project }) => {
   return (
     <div className="project-container">
       <div className="thumb">
-        {project.thumbnail._type.includes(`image`) && (
-          <Image
-            src={urlFor(thumbnail).width(1000).url()}
-            alt={project.title}
-            fill
-          />
-        )}
-        {thumbnail._type.includes(`video`) && (
+        <Image
+          src={urlFor(thumbnail).width(1000).url()}
+          alt={project.title}
+          fill
+        />
+        {/* {thumbnail._type.includes(`video`) && (
           <video controls playsInline>
             <source src={`${thumbnail.url}#t=0.001`} type={thumbnail.type} />
           </video>
-        )}
+        )} */}
       </div>
       <h2 className="title">{title}</h2>
       <div className="project-tags">
