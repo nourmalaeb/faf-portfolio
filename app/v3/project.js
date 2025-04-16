@@ -28,21 +28,19 @@ const Project = ({ project }) => {
         )}
       </div>
       <h2 className="title">{title}</h2>
+      <div className="project-tags">
+        {tags &&
+          tags.map((tag, idx) => (
+            <span className="tag font-mono" key={`tag-${project.__id}-${idx}`}>
+              {tag}
+            </span>
+          ))}
+      </div>
       <h4 className="subtitle">{subtitle}</h4>
       <div className="project-info">
         <div>
           <PortableText value={description} />
           {/* <p style={{ fontStyle: `italic` }}>{project.date}</p> */}
-          <div className="project-tags">
-            {tags.map((tag, idx) => (
-              <span
-                className="tag font-mono"
-                key={`tag-${project.__id}-${idx}`}
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
         </div>
       </div>
       {details && details.length > 0 && <Details details={details} />}

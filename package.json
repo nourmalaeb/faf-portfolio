@@ -15,6 +15,7 @@
     "next-sanity": "^9.10.2",
     "radix-ui": "^1.2.0",
     "react": "19.1.0",
+    "react-blurhash": "^0.3.0",
     "react-dom": "19.1.0",
     "sanity": "^3.84.0",
     "use-sound": "^5.0.0"

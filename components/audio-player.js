@@ -132,7 +132,7 @@ const Track = ({
               position: `absolute`,
               width: `100%`,
               height: isPlaying ? `2px` : `1.5px`,
-              background: `black`,
+              background: `var(--color-fg)`,
               left: `0`,
               top: `50%`,
               transform: `translateY(-50%)`,

@@ -11,6 +11,12 @@ export const homepageQuery = groq`
     ...,
     projects[]-> {
       ...,
+      thumbnail {
+        asset->{
+          ...,
+          metadata
+        }
+      },
       tracks[] {..., "mp3": mp3.asset->url, "ogg": ogg.asset->url },
     }
   }

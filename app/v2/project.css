@@ -24,7 +24,7 @@
   width: 100%;
   display: flex;
   align-items: center;
-  border-top: 1px solid black;
+  border-top: 1px solid var(--color-fg);
   border-bottom: none;
   border-left: none;
   border-right: none;
@@ -67,7 +67,7 @@
   letter-spacing: 0.05em;
   font-weight: 500;
   padding: 0.25em 0.75em;
-  border: 0.5px solid black;
+  border: 0.5px solid var(--color-fg);
   border-radius: 100em;
   margin-right: 0.25em;
 }

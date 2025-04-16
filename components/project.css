@@ -36,12 +36,21 @@
 
 .thumb {
   position: relative;
-  height: 50vh;
+  height: 65vh;
+  margin: 0 auto;
   & > * {
     position: relative;
   }
   & img {
     object-fit: contain;
+  }
+
+  & .blurhash {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    inset: 0;
+    filter: blur(30px);
   }
 }
 
@@ -51,7 +60,7 @@
   letter-spacing: 0.05em;
   font-weight: 500;
   padding: 0.25em 0.75em;
-  border: 0.5px solid black;
+  border: 0.5px solid var(--color-fg);
   border-radius: 100em;
   margin-right: 0.25em;
 }

@@ -8,7 +8,7 @@ const LoadingAnim = () => (
       viewBox="0 0 75 25"
       preserveAspectRatio="xMidYMid"
     >
-      <rect width="25" height="2" x="25" y="11.5" fill="black">
+      <rect width="25" height="2" x="25" y="11.5" fill="var(--color-fg)">
         <animateTransform
           attributeName="transform"
           type="rotate"

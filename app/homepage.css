@@ -39,7 +39,7 @@ h1 {
 .dot {
   width: 0.05em;
   height: 0.35em;
-  background: black;
+  background: var(--color-fg);
   transform-origin: center;
   transform: rotate(45deg);
 }
