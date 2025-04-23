@@ -24,11 +24,12 @@
   /* text-transform: uppercase; */
   font-size: clamp(1.5em, calc(1.5em + 3vw), 3em);
   text-align: center;
-  letter-spacing: -0.05em;
+  font-weight: 300;
+  position: relative;
+  z-index: 10;
 }
 
 .subtitle {
-  font-style: italic;
   font-size: clamp(1em, calc(1em + 2vw), 1.5em);
   margin-bottom: 1em;
   text-align: center;
@@ -37,7 +38,8 @@
 .thumb {
   position: relative;
   height: 65vh;
-  margin: 0 auto;
+  margin: 0.5em auto;
+  z-index: 0;
   & > * {
     position: relative;
   }
@@ -52,6 +54,11 @@
     inset: 0;
     filter: blur(30px);
   }
+}
+
+.project-body {
+  position: relative;
+  z-index: 10;
 }
 
 .tag {

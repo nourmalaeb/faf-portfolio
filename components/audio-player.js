@@ -5,6 +5,7 @@ import useSound from 'use-sound';
 import { useInterval } from './utils/hooks';
 import './audio-player.css';
 import LoadingAnim from './loading-spinner';
+import { motion } from 'motion/react';
 
 const Track = ({
   track,
@@ -23,9 +24,9 @@ const Track = ({
   const trackTitle = track.title;
 
   const [play, { pause, duration, sound }] = useSound(trackSrc, {
-    preload: 'metadata',
-    html5: true,
-    // interrupt: true,
+    // html5: true,
+    // preload: 'metadata',
+    interrupt: true,
     onend: () => {
       setIsPlaying(false);
       incrementIndex();
@@ -100,9 +101,11 @@ const Track = ({
         className="track-divider"
         style={{ opacity: isPlaying ? 0.4 : nonePlaying ? 1 : 0.4 }}
       />
-      <div
+      <motion.div
         className="track-box"
         style={{ opacity: isPlaying ? 1 : nonePlaying ? 1 : 0.4 }}
+        initial={{ scale: 0.9 }}
+        whileInView={{ scale: 1 }}
       >
         <div className="track-title">
           <h5>{trackTitle}</h5>
@@ -145,7 +148,7 @@ const Track = ({
             }}
           />
         </div>
-      </div>
+      </motion.div>
     </>
   );
 };

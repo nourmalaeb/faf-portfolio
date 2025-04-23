@@ -35,8 +35,30 @@ export const body_self = localFont({
   variable: '--font-body',
 });
 
+export const body_sometimes = localFont({
+  src: [
+    {
+      path: '../styles/fonts/SometimesTimes.woff2',
+      style: 'normal',
+      weight: '400',
+    },
+    {
+      path: '../styles/fonts/SometimesTimesItalic.woff2',
+      style: 'italic',
+      weight: '400',
+    },
+  ],
+  display: 'swap',
+  variable: '--font-body',
+});
+
 export const body = localFont({
   src: [
+    {
+      path: '../styles/fonts/PPFragment-GlareThin.woff2',
+      style: 'normal',
+      weight: '200',
+    },
     {
       path: '../styles/fonts/PPFragment-GlareLight.woff2',
       style: 'normal',
