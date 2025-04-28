@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import VolumeInput from './volume-input';
 import AudioProgressBar from './audio-progress-bar';
 import './tracks.css';
@@ -46,6 +46,7 @@ export default function AudioPlayer({ tracks }) {
         const duration = await loadDuration(track);
         durations[track._key] = duration;
       }
+      // console.log(durations);
       setTrackDurations(durations);
     };
 
@@ -159,85 +160,108 @@ export default function AudioPlayer({ tracks }) {
     }
   }, [currentIndex, tracks.length]);
 
-  // console.log(trackDurations);
-
   if (!tracks || !tracks.length) {
     return null;
   }
 
   return (
-    <div className="tracklist">
+    <div className={`tracklist${isPlaying ? ' is-playing' : ''}`}>
       {tracks.length > 0 &&
-        tracks.map((track, idx) => (
-          <TrackItem
-            track={{ ...track, duration: trackDurations[track._key] || 0 }}
-            isActive={isPlaying}
-            isPlaying={isPlaying && idx === currentIndex}
-            isLastTrack={idx === tracks.length - 1}
-            progress={trackProgresses[track._key] || 0}
-            onClick={() => handleTrackSelect(idx)}
-            onSeek={time => handleSeek(track._key, time)}
-            key={track._key}
-          />
-        ))}
+        tracks.map((track, idx) => {
+          const isCurrent = idx === currentIndex;
+          const trackKey = track._key; // Stable key
+          const duration = trackDurations[trackKey] || 0;
+          const progress = trackProgresses[trackKey] || 0;
+
+          return (
+            <div key={trackKey}>
+              <div
+                className="track-divider"
+                style={{
+                  opacity: isPlaying
+                    ? isCurrent || idx === currentIndex + 1
+                      ? 1
+                      : 0.4
+                    : 1,
+                }}
+              />
+
+              <TrackItem
+                track={track}
+                duration={duration}
+                isCurrent={isCurrent}
+                isPlaying={isPlaying}
+                progress={progress}
+                onTrackSelect={handleTrackSelect}
+                index={idx}
+                onSeek={handleSeek}
+              />
+            </div>
+          );
+        })}
+      <div
+        className="track-divider"
+        style={{
+          opacity: isPlaying
+            ? currentIndex !== tracks.length - 1
+              ? 0.4
+              : 1
+            : 1,
+        }}
+      />
     </div>
   );
 }
 
-const TrackItem = ({
-  track,
-  isActive,
-  isPlaying,
-  progress,
-  onClick,
-  onSeek,
-  isLastTrack,
-}) => {
-  const formatDuration = seconds => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = Math.round(seconds % 60);
-    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-  };
+const TrackItem = React.memo(
+  ({
+    track,
+    duration,
+    isCurrent,
+    isPlaying,
+    progress,
+    onTrackSelect,
+    index,
+    onSeek,
+  }) => {
+    const formatDuration = seconds => {
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = Math.round(seconds % 60);
+      return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+    };
 
-  return (
-    <>
-      <div
-        className="track-divider"
-        style={{
-          opacity: isPlaying ? 1 : isActive ? 0.4 : 1,
-        }}
-      />
-      <div
-        className="track-box"
-        style={{
-          opacity: isPlaying ? 1 : isActive ? 0.4 : 1,
-        }}
-      >
+    const handleClick = useCallback(
+      () => onTrackSelect(index),
+      [onTrackSelect, index]
+    );
+    const handleSeekRequest = useCallback(
+      time => onSeek(track._key, time),
+      [onSeek, index]
+    );
+
+    const trackBoxClasses = `track-box${isPlaying ? (isCurrent ? '' : ' dim') : ''}`;
+
+    return (
+      <div className={trackBoxClasses}>
         <div className="track-title">
           <h5>{track.title}</h5>
-          <button onClick={onClick} className="play-pause" type="button">
-            {isPlaying ? 'PAUSE' : 'PLAY'}
+          <button onClick={handleClick} className="play-pause" type="button">
+            {isPlaying && isCurrent ? 'PAUSE' : 'PLAY'}
           </button>
         </div>
         <span className="track-time">
-          {progress < 1
-            ? formatDuration(track.duration)
-            : formatDuration(progress)}
+          {progress < 1 ? formatDuration(duration) : formatDuration(progress)}
         </span>
         <AudioProgressBar
-          isPlaying={isPlaying}
-          duration={track.duration}
+          isPlaying={isPlaying && isCurrent}
+          duration={duration}
           progress={progress}
-          onSeek={onSeek}
+          onSeek={handleSeekRequest}
           name={track.key}
         />
       </div>
-      <div
-        className="track-divider"
-        style={{
-          opacity: isPlaying ? 1 : isActive ? 0 : isLastTrack ? 1 : 0,
-        }}
-      />
-    </>
-  );
-};
+    );
+  }
+);
+
+TrackItem.displayName = 'TrackItem';

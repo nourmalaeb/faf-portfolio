@@ -17,6 +17,14 @@
   @media (min-width: 768px) {
     grid-template-columns: 3fr auto 2fr;
   }
+
+  &.dim {
+    .track-title h5,
+    .track-time,
+    .audio-progress-bar {
+      opacity: 0.4;
+    }
+  }
 }
 
 .track-title {
