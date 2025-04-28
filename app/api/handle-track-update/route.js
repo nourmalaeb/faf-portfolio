@@ -24,6 +24,7 @@ const sanityClient = createClient({
   projectId: SANITY_PROJECT_ID,
   dataset: SANITY_DATASET,
   token: SANITY_API_TOKEN,
+  apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2025-04-06',
   useCdn: false, // Use false for write operations
 });
 
