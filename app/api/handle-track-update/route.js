@@ -117,42 +117,66 @@ export async function POST(req) {
     );
   }
 
-  // 5. Process Payload - Expecting a Project Document ID
-  const projectId = body?.ids?.updated?.[0] || body?.ids?.created?.[0];
+  // 5. Process Payload - Expecting a Project Document ID (draft or published)
+  const projectIdWithPotentialDraft =
+    body?.ids?.updated?.[0] || body?.ids?.created?.[0];
 
-  if (!projectId || !projectId.startsWith('project.')) {
+  // Check if the ID is missing or doesn't start with 'project.' or 'drafts.project.'
+  if (
+    !projectIdWithPotentialDraft ||
+    !(
+      projectIdWithPotentialDraft.startsWith('project.') ||
+      projectIdWithPotentialDraft.startsWith('drafts.project.')
+    )
+  ) {
     console.log(
-      'Webhook received for non-project document or missing ID:',
-      projectId
+      'Webhook received for non-project document or missing/invalid ID:',
+      projectIdWithPotentialDraft // Log the ID that was ignored
     );
     return NextResponse.json(
-      { message: 'Ignoring non-project document or missing ID' },
+      { message: 'Ignoring non-project document or invalid ID format' }, // Updated message
       { status: 200 }
     );
   }
 
-  console.log(`Processing update for project: ${projectId}`);
+  // If the ID is valid (draft or published), remove the 'drafts.' prefix for fetching
+  // This ID is used in the GROQ query to fetch the document data.
+  // Fetching with the ID *without* 'drafts.' prefix usually gets the latest
+  // version (published or draft) depending on your token permissions.
+  const projectIdForFetch = projectIdWithPotentialDraft.replace(
+    /^drafts\./,
+    ''
+  );
+
+  console.log(
+    `Processing update for project: ${projectIdForFetch} (Source ID: ${projectIdWithPotentialDraft})`
+  ); // Log both
 
   try {
     // 6. Fetch the Project Document from Sanity
+    // Fetch using the cleaned ID. The query *could* explicitly check for both
+    // `_id == $projectIdForFetch || _id == $draftId` but fetching by the base ID
+    // is often sufficient if your token has read access to drafts.
     const projectData = await sanityClient.fetch(
       `*[_id == $projectId][0]{
         _id,
         "tracks": tracks[]{ _key, asset, duration }
       }`,
-      { projectId }
+      { projectId: projectIdForFetch } // Use the cleaned ID for the query
     );
 
     if (!projectData) {
-      console.log(`Project document ${projectId} not found.`);
+      console.log(`Project document ${projectIdForFetch} not found.`);
+      // It's possible the document was deleted right after the webhook triggered.
+      // Return 200 as we successfully processed the webhook, just found no doc.
       return NextResponse.json(
-        { message: 'Project document not found' },
-        { status: 404 }
+        { message: 'Project document not found (possibly deleted)' },
+        { status: 200 }
       );
     }
 
     if (!projectData.tracks || projectData.tracks.length === 0) {
-      console.log(`No tracks found in project ${projectId}.`);
+      console.log(`No tracks found in project ${projectIdForFetch}.`);
       return NextResponse.json(
         { message: 'No tracks found in project, skipping.' },
         { status: 200 }
@@ -161,7 +185,9 @@ export async function POST(req) {
 
     // 7. Process Each Track in the Project
     let updatesMade = 0;
-    const patch = sanityClient.patch(projectId);
+    // Patch the document using the *original* ID from the webhook payload
+    // This ensures we patch the exact draft or published document that triggered the event.
+    const patch = sanityClient.patch(projectIdWithPotentialDraft);
 
     const assetIds = projectData.tracks
       .map(track => track?.asset?._ref)
@@ -169,7 +195,7 @@ export async function POST(req) {
 
     if (assetIds.length === 0) {
       console.log(
-        `No valid audio asset references found in tracks for project ${projectId}.`
+        `No valid audio asset references found in tracks for project ${projectIdForFetch}.`
       );
       return NextResponse.json(
         { message: 'No audio assets to process.' },
@@ -177,6 +203,7 @@ export async function POST(req) {
       );
     }
 
+    // Fetch all referenced audio assets in one go for efficiency
     const assets = await sanityClient.fetch(`*[_id in $assetIds]{ _id, url }`, {
       assetIds,
     });
@@ -189,7 +216,7 @@ export async function POST(req) {
 
       if (!trackKey || !assetRef) {
         console.log(
-          `Skipping track (missing key or asset ref) in project ${projectId}:`,
+          `Skipping track (missing key or asset ref) in project ${projectIdForFetch}:`,
           track
         );
         continue;
@@ -199,7 +226,7 @@ export async function POST(req) {
 
       if (!audioUrl) {
         console.log(
-          `Could not retrieve audio URL for asset ${assetRef} in track ${trackKey} of project ${projectId}`
+          `Could not retrieve audio URL for asset ${assetRef} in track ${trackKey} of project ${projectIdForFetch}`
         );
         continue;
       }
@@ -208,29 +235,30 @@ export async function POST(req) {
 
       if (newDuration == null) {
         console.log(
-          `Could not extract duration for ${audioUrl} (track ${trackKey}, project ${projectId})`
+          `Could not extract duration for ${audioUrl} (track ${trackKey}, project ${projectIdForFetch})`
         );
         continue;
       }
 
       if (currentDuration !== newDuration) {
         console.log(
-          `Updating duration for track ${trackKey} in project ${projectId} from ${currentDuration} to ${newDuration}`
+          `Updating duration for track ${trackKey} in project ${projectIdWithPotentialDraft} from ${currentDuration} to ${newDuration}` // Log with original ID
         );
+        // Use the path syntax to target the duration field of the specific track object
         patch.set({ [`tracks[_key=="${trackKey}"].duration`]: newDuration });
         updatesMade++;
       } else {
         console.log(
-          `Duration for track ${trackKey} in project ${projectId} is already up-to-date (${newDuration}).`
+          `Duration for track ${trackKey} in project ${projectIdForFetch} is already up-to-date (${newDuration}).`
         );
       }
     } // End of track loop
 
     // 8. Commit the Patch if changes were made
     if (updatesMade > 0) {
-      await patch.commit();
+      await patch.commit(); // Commits changes to the document identified by projectIdWithPotentialDraft
       console.log(
-        `Successfully patched ${updatesMade} track(s) in project ${projectId}.`
+        `Successfully patched ${updatesMade} track(s) in project ${projectIdWithPotentialDraft}.` // Log with original ID
       );
       return NextResponse.json(
         {
@@ -239,14 +267,19 @@ export async function POST(req) {
         { status: 200 }
       );
     } else {
-      console.log(`No duration updates needed for project ${projectId}.`);
+      console.log(
+        `No duration updates needed for project ${projectIdForFetch}.`
+      );
       return NextResponse.json(
         { message: 'All track durations already up-to-date.' },
         { status: 200 }
       );
     }
   } catch (error) {
-    console.error(`Error processing webhook for project ${projectId}:`, error);
+    console.error(
+      `Error processing webhook for project ${projectIdWithPotentialDraft}:`,
+      error
+    ); // Log with original ID
     // Check if it's a Sanity client error vs other errors
     if (error.response && error.response.body) {
       console.error('Sanity client error details:', error.response.body);
