@@ -36,8 +36,24 @@ const sanityClient = createClient({
 // Function to verify the webhook signature (Important for security!)
 async function verifyWebhookSignature(req) {
   const signature = req.headers.get('sanity-signature');
+  // Log the received signature
+  console.log('Received Sanity Signature Header:', signature);
+
   if (!signature) {
     console.error('Missing sanity-signature header');
+    return { isValid: false, body: null };
+  }
+
+  // Ensure the secret is loaded (log only a small part for security)
+  const secretForVerification = SANITY_WEBHOOK_SECRET;
+  console.log(
+    'Using Secret (starts with):',
+    secretForVerification
+      ? secretForVerification.substring(0, 5) + '...'
+      : 'SECRET NOT LOADED!'
+  );
+  if (!secretForVerification) {
+    console.error('SANITY_WEBHOOK_SECRET is not loaded in the environment!');
     return { isValid: false, body: null };
   }
 
@@ -45,20 +61,29 @@ async function verifyWebhookSignature(req) {
     const requestBodyArrayBuffer = await req.arrayBuffer();
     const requestBodyBuffer = Buffer.from(requestBodyArrayBuffer);
 
+    // Log the length of the body being processed
+    console.log('Request Body Buffer Length:', requestBodyBuffer.length);
+
     const computedSignature = crypto
-      .createHmac('sha256', SANITY_WEBHOOK_SECRET)
+      .createHmac('sha256', secretForVerification) // Use the variable here
       .update(requestBodyBuffer)
       .digest('hex');
 
+    // Log the signature calculated by your function
+    console.log('Computed Signature:', computedSignature);
+
     if (signature !== computedSignature) {
-      console.error('Invalid webhook signature');
+      console.error('Signature mismatch!'); // More specific log
       return { isValid: false, body: null };
     }
+
+    // Log success before parsing body
+    console.log('Signature verified successfully.');
 
     const parsedBody = JSON.parse(requestBodyBuffer.toString());
     return { isValid: true, body: parsedBody };
   } catch (error) {
-    console.error('Error verifying webhook signature:', error);
+    console.error('Error during webhook signature verification:', error);
     return { isValid: false, body: null };
   }
 }
