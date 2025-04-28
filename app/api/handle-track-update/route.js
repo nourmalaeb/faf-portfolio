@@ -69,9 +69,20 @@ export const config = {
 
 export async function POST(req) {
   // 1. Read the raw body
-  const requestBodyString = await readRawBody(req.body); // Use req.body directly with bodyParser: false
+  let requestBodyString;
+  try {
+    requestBodyString = await readRawBody(req.body);
+    // Log the raw body string
+    console.log('Raw Request Body String:', requestBodyString);
+  } catch (error) {
+    console.error('Error reading raw request body:', error);
+    return NextResponse.json(
+      { message: 'Internal Server Error: Could not read body' },
+      { status: 500 }
+    );
+  }
 
-  // 2. Get the signature header
+  // 2. Get the signature header (remains the same)
   const signature = req.headers.get(SIGNATURE_HEADER_NAME);
   if (!signature) {
     console.error('Missing signature header');
@@ -81,7 +92,7 @@ export async function POST(req) {
     );
   }
 
-  // 3. Verify Signature using the library
+  // 3. Verify Signature using the library (remains the same)
   let isValid = false;
   try {
     isValid = await isValidSignature(
@@ -91,12 +102,11 @@ export async function POST(req) {
     );
   } catch (error) {
     console.error('Error verifying signature:', error);
-    // Treat errors during verification as invalid signature
     isValid = false;
   }
 
   if (!isValid) {
-    console.warn('Invalid webhook signature received.'); // Use warn level for failed attempts
+    console.warn('Invalid webhook signature received.');
     return NextResponse.json(
       { message: 'Unauthorized: Invalid signature' },
       { status: 401 }
@@ -109,6 +119,8 @@ export async function POST(req) {
   let body;
   try {
     body = JSON.parse(requestBodyString);
+    // Log the parsed body object
+    console.log('Parsed Request Body Object:', JSON.stringify(body, null, 2)); // Use stringify for structured logging
   } catch (error) {
     console.error('Error parsing request body JSON:', error);
     return NextResponse.json(
@@ -121,6 +133,12 @@ export async function POST(req) {
   const projectIdWithPotentialDraft =
     body?.ids?.updated?.[0] || body?.ids?.created?.[0];
 
+  // Log the extracted ID before the check
+  console.log(
+    'Extracted Project ID (potential draft):',
+    projectIdWithPotentialDraft
+  );
+
   // Check if the ID is missing or doesn't start with 'project.' or 'drafts.project.'
   if (
     !projectIdWithPotentialDraft ||
@@ -130,19 +148,15 @@ export async function POST(req) {
     )
   ) {
     console.log(
-      'Webhook received for non-project document or missing/invalid ID:',
-      projectIdWithPotentialDraft // Log the ID that was ignored
+      'Webhook received for non-project document or missing/invalid ID, ignoring.' // Simplified log message here
     );
     return NextResponse.json(
-      { message: 'Ignoring non-project document or invalid ID format' }, // Updated message
+      { message: 'Ignoring non-project document or invalid ID format' },
       { status: 200 }
     );
   }
 
-  // If the ID is valid (draft or published), remove the 'drafts.' prefix for fetching
-  // This ID is used in the GROQ query to fetch the document data.
-  // Fetching with the ID *without* 'drafts.' prefix usually gets the latest
-  // version (published or draft) depending on your token permissions.
+  // ... (rest of your code remains the same) ...
   const projectIdForFetch = projectIdWithPotentialDraft.replace(
     /^drafts\./,
     ''
@@ -150,7 +164,7 @@ export async function POST(req) {
 
   console.log(
     `Processing update for project: ${projectIdForFetch} (Source ID: ${projectIdWithPotentialDraft})`
-  ); // Log both
+  );
 
   try {
     // 6. Fetch the Project Document from Sanity
