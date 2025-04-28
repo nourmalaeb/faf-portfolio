@@ -1,5 +1,3 @@
-import { AudioTrackObject } from '../lib/audioTrackObject';
-
 export default {
   name: 'audioTrack',
   title: 'Audio Track',
@@ -19,5 +17,4 @@ export default {
       readOnly: true,
     },
   ],
-  inputComponent: AudioTrackObject,
 };
