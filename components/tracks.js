@@ -7,7 +7,6 @@ export default function AudioPlayer({ tracks }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.8);
-  const [trackDurations, setTrackDurations] = useState({});
   const [trackProgresses, setTrackProgresses] = useState({});
 
   const audioRef = useRef(null);
@@ -25,34 +24,6 @@ export default function AudioPlayer({ tracks }) {
     };
   }, []);
 
-  // Load durations for all tracks
-  useEffect(() => {
-    const loadDuration = async track => {
-      const audio = new Audio();
-      return new Promise(resolve => {
-        audio.src = track.mp3;
-        audio.addEventListener('loadedmetadata', () => {
-          resolve(audio.duration);
-        });
-        audio.addEventListener('error', () => {
-          resolve(0);
-        });
-      });
-    };
-
-    const loadAllDurations = async () => {
-      const durations = {};
-      for (const track of tracks) {
-        const duration = await loadDuration(track);
-        durations[track._key] = duration;
-      }
-      // console.log(durations);
-      setTrackDurations(durations);
-    };
-
-    loadAllDurations();
-  }, [tracks]);
-
   // Handle track selection change
   useEffect(() => {
     if (currentIndex >= 0 && tracks.length > currentIndex) {
@@ -60,7 +31,7 @@ export default function AudioPlayer({ tracks }) {
       if (!audio) return;
 
       const track = tracks[currentIndex];
-      audio.src = track.mp3;
+      audio.src = track.url;
 
       // Set up event listeners
       const updateTime = () => {
@@ -170,7 +141,7 @@ export default function AudioPlayer({ tracks }) {
         tracks.map((track, idx) => {
           const isCurrent = idx === currentIndex;
           const trackKey = track._key; // Stable key
-          const duration = trackDurations[trackKey] || 0;
+          const duration = track.duration;
           const progress = trackProgresses[trackKey] || 0;
 
           return (

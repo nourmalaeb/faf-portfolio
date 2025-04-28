@@ -1,9 +1,9 @@
 // /Users/nourmalaeb/Dev/personal/friends/faf-portfolio/app/api/handle-track-update/route.js
 import { createClient } from '@sanity/client';
-import * as musicMetadata from 'music-metadata';
-// import crypto from 'crypto'; // Keep crypto if needed elsewhere, but not for signature verification now
+// Import parseWebStream for handling URL fetching
+import { parseWebStream } from 'music-metadata';
 import { NextResponse } from 'next/server';
-import { isValidSignature, SIGNATURE_HEADER_NAME } from '@sanity/webhook'; // Import from the library
+import { isValidSignature, SIGNATURE_HEADER_NAME } from '@sanity/webhook';
 
 // --- Configuration ---
 const SANITY_PROJECT_ID = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
@@ -11,205 +11,200 @@ const SANITY_DATASET = process.env.NEXT_PUBLIC_SANITY_DATASET;
 const SANITY_API_TOKEN = process.env.SANITY_API_TOKEN; // Needs write access
 const SANITY_WEBHOOK_SECRET = process.env.SANITY_WEBHOOK_SECRET;
 
-// Ensure the secret is loaded once
+// --- Environment Variable Validation ---
 if (!SANITY_WEBHOOK_SECRET) {
-  console.error('Missing SANITY_WEBHOOK_SECRET environment variable');
-  // Throwing an error might be better here to prevent the function from running incorrectly
-  throw new Error('Missing SANITY_WEBHOOK_SECRET environment variable');
+  console.error('FATAL: Missing SANITY_WEBHOOK_SECRET environment variable.');
+  throw new Error('Missing SANITY_WEBHOOK_SECRET environment variable.');
 }
-// Other env var checks (optional, depends on how critical they are at startup)
 if (!SANITY_PROJECT_ID || !SANITY_DATASET || !SANITY_API_TOKEN) {
-  console.warn('Missing other Sanity environment variables');
+  console.warn(
+    'WARN: Missing one or more of SANITY_PROJECT_ID, SANITY_DATASET, SANITY_API_TOKEN environment variables.'
+  );
 }
 
+// --- Sanity Client Initialization ---
 const sanityClient = createClient({
   projectId: SANITY_PROJECT_ID,
   dataset: SANITY_DATASET,
   token: SANITY_API_TOKEN,
   apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2025-04-06',
-  useCdn: false, // Essential for write operations
+  useCdn: false,
 });
 
 // --- Helper Functions ---
 
-// Function to read the raw request body (needed for signature verification)
-// Adapted from @sanity/webhook README example
-async function readRawBody(readable) {
-  const chunks = [];
-  for await (const chunk of readable) {
-    chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
-  }
-  // Returns the raw buffer, which isValidSignature can sometimes handle directly,
-  // but converting to utf8 string is generally safer and what the examples show.
-  return Buffer.concat(chunks).toString('utf8');
-}
-
-// Function to get audio duration (remains the same)
+// Updated function to get audio duration using fetch and parseWebStream
 async function getAudioDuration(audioUrl) {
-  if (!audioUrl) return null;
+  if (!audioUrl) {
+    console.warn('getAudioDuration called with no URL.');
+    return null;
+  }
   try {
-    const metadata = await musicMetadata.fetchFromUrl(audioUrl);
+    // 1. Fetch the audio file URL
+    const response = await fetch(audioUrl);
+
+    // 2. Check if the fetch was successful
+    if (!response.ok) {
+      console.error(
+        `Error fetching audio URL ${audioUrl}: Status ${response.status}`
+      );
+      return null;
+    }
+
+    // 3. Ensure the response body exists
+    if (!response.body) {
+      console.error(`No response body found for URL ${audioUrl}`);
+      return null;
+    }
+
+    // 4. Parse the metadata from the web stream (response.body)
+    // We might need to pass the Content-Type header as a hint if available
+    const contentType = response.headers.get('content-type') || undefined;
+    const contentLengthHeader = response.headers.get('content-length');
+    const size = contentLengthHeader
+      ? parseInt(contentLengthHeader, 10)
+      : undefined;
+
+    const metadata = await parseWebStream(response.body, {
+      mimeType: contentType,
+      size,
+    });
+
+    // 5. Return the rounded duration
     return metadata?.format?.duration
       ? Math.round(metadata.format.duration)
       : null;
   } catch (error) {
-    console.error(`Error fetching metadata for ${audioUrl}:`, error.message);
+    // Catch errors from fetch() or parseWebStream()
+    console.error(`Error processing metadata for ${audioUrl}:`, error.message);
+    // Log the full error in development for more details
+    if (process.env.NODE_ENV === 'development') {
+      console.error(error);
+    }
     return null;
   }
 }
 
 // --- Main Handler (POST for App Router) ---
-
-// Disable Next.js body parsing for this route
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+// No need for `export const config = { api: { bodyParser: false } };` in App Router
 
 export async function POST(req) {
-  // 1. Read the raw body
   let requestBodyString;
   try {
-    requestBodyString = await readRawBody(req.body);
-    // Log the raw body string
-    console.log('Raw Request Body String:', requestBodyString);
+    // 1. Read the raw request body using req.text() for signature verification
+    requestBodyString = await req.text();
+    console.log(
+      'Raw Request Body String received (length):',
+      requestBodyString.length
+    );
   } catch (error) {
-    console.error('Error reading raw request body:', error);
+    console.error('Error reading request body with req.text():', error);
     return NextResponse.json(
-      { message: 'Internal Server Error: Could not read body' },
+      { message: 'Internal Server Error: Could not read request body' },
       { status: 500 }
     );
   }
 
-  // 2. Get the signature header (remains the same)
+  // 2. Get the signature header
   const signature = req.headers.get(SIGNATURE_HEADER_NAME);
   if (!signature) {
-    console.error('Missing signature header');
-    return NextResponse.json(
-      { message: 'Unauthorized: Missing signature' },
-      { status: 401 }
-    );
+    console.error('Unauthorized: Missing signature header.');
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }
 
-  // 3. Verify Signature using the library (remains the same)
+  // 3. Verify Signature using the library
   let isValid = false;
   try {
+    // Ensure the secret is valid before calling
+    if (!SANITY_WEBHOOK_SECRET) {
+      throw new Error('SANITY_WEBHOOK_SECRET is missing internally.');
+    }
     isValid = await isValidSignature(
-      requestBodyString, // The raw body string
-      signature, // The signature header
-      SANITY_WEBHOOK_SECRET // Your secret
+      requestBodyString,
+      signature,
+      SANITY_WEBHOOK_SECRET
     );
   } catch (error) {
-    console.error('Error verifying signature:', error);
+    console.error('Error during signature verification:', error);
     isValid = false;
   }
 
   if (!isValid) {
-    console.warn('Invalid webhook signature received.');
-    return NextResponse.json(
-      { message: 'Unauthorized: Invalid signature' },
-      { status: 401 }
-    );
+    console.warn('Unauthorized: Invalid webhook signature received.');
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }
 
   console.log('Webhook signature verified successfully.');
 
   // 4. Parse the body *after* verification
-  let body;
+  let body; // This 'body' will contain the full document content
   try {
+    if (!requestBodyString) {
+      throw new Error('Request body string is empty after verification.');
+    }
     body = JSON.parse(requestBodyString);
-    // Log the parsed body object
-    console.log('Parsed Request Body Object:', JSON.stringify(body, null, 2)); // Use stringify for structured logging
   } catch (error) {
     console.error('Error parsing request body JSON:', error);
     return NextResponse.json(
-      { message: 'Bad Request: Invalid JSON' },
+      { message: 'Bad Request: Invalid JSON format' },
       { status: 400 }
     );
   }
 
-  // 5. Process Payload - Expecting a Project Document ID (draft or published)
-  const projectIdWithPotentialDraft =
-    body?.ids?.updated?.[0] || body?.ids?.created?.[0];
+  // 5. Extract Document ID directly from the document content
+  const projectIdWithPotentialDraft = body?._id;
+  const documentType = body?._type;
 
-  // Log the extracted ID before the check
-  console.log(
-    'Extracted Project ID (potential draft):',
-    projectIdWithPotentialDraft
-  );
+  console.log('Extracted Document ID:', projectIdWithPotentialDraft);
+  console.log('Extracted Document Type:', documentType);
 
-  // Check if the ID is missing or doesn't start with 'project.' or 'drafts.project.'
-  if (
-    !projectIdWithPotentialDraft ||
-    !(
-      projectIdWithPotentialDraft.startsWith('project.') ||
-      projectIdWithPotentialDraft.startsWith('drafts.project.')
-    )
-  ) {
+  // Check if the ID is present and if the document type is 'project'
+  if (!projectIdWithPotentialDraft || documentType !== 'project') {
     console.log(
-      'Webhook received for non-project document or missing/invalid ID, ignoring.' // Simplified log message here
+      `Ignoring webhook: Document type (${documentType}) is not 'project' or ID (${projectIdWithPotentialDraft}) is missing/invalid.`
     );
     return NextResponse.json(
-      { message: 'Ignoring non-project document or invalid ID format' },
+      { message: 'Ignoring non-project document or invalid ID' },
       { status: 200 }
     );
   }
 
-  // ... (rest of your code remains the same) ...
+  // Prepare ID for fetching (remove 'drafts.' prefix)
   const projectIdForFetch = projectIdWithPotentialDraft.replace(
     /^drafts\./,
     ''
   );
-
   console.log(
     `Processing update for project: ${projectIdForFetch} (Source ID: ${projectIdWithPotentialDraft})`
   );
 
   try {
-    // 6. Fetch the Project Document from Sanity
-    // Fetch using the cleaned ID. The query *could* explicitly check for both
-    // `_id == $projectIdForFetch || _id == $draftId` but fetching by the base ID
-    // is often sufficient if your token has read access to drafts.
-    const projectData = await sanityClient.fetch(
-      `*[_id == $projectId][0]{
-        _id,
-        "tracks": tracks[]{ _key, asset, duration }
-      }`,
-      { projectId: projectIdForFetch } // Use the cleaned ID for the query
-    );
+    // 6. Use the document data received in the webhook body
+    const projectData = body;
 
-    if (!projectData) {
-      console.log(`Project document ${projectIdForFetch} not found.`);
-      // It's possible the document was deleted right after the webhook triggered.
-      // Return 200 as we successfully processed the webhook, just found no doc.
-      return NextResponse.json(
-        { message: 'Project document not found (possibly deleted)' },
-        { status: 200 }
-      );
-    }
-
+    // Validate if tracks exist
     if (!projectData.tracks || projectData.tracks.length === 0) {
-      console.log(`No tracks found in project ${projectIdForFetch}.`);
+      console.log(
+        `No tracks found in received project data for ${projectIdForFetch}.`
+      );
       return NextResponse.json(
-        { message: 'No tracks found in project, skipping.' },
+        { message: 'No tracks found in project data.' },
         { status: 200 }
       );
     }
 
-    // 7. Process Each Track in the Project
+    // 7. Process Each Track
     let updatesMade = 0;
-    // Patch the document using the *original* ID from the webhook payload
-    // This ensures we patch the exact draft or published document that triggered the event.
     const patch = sanityClient.patch(projectIdWithPotentialDraft);
 
+    // Fetch asset URLs
     const assetIds = projectData.tracks
-      .map(track => track?.asset?._ref)
+      .map(track => track?.asset?.asset?._ref) // Path based on audioTrack.js schema
       .filter(Boolean);
 
     if (assetIds.length === 0) {
       console.log(
-        `No valid audio asset references found in tracks for project ${projectIdForFetch}.`
+        `No valid audio asset references in tracks for project ${projectIdForFetch}.`
       );
       return NextResponse.json(
         { message: 'No audio assets to process.' },
@@ -217,62 +212,64 @@ export async function POST(req) {
       );
     }
 
-    // Fetch all referenced audio assets in one go for efficiency
     const assets = await sanityClient.fetch(`*[_id in $assetIds]{ _id, url }`, {
       assetIds,
     });
     const assetUrlMap = new Map(assets.map(asset => [asset._id, asset.url]));
 
-    for (const track of projectData.tracks) {
+    // Process tracks to get durations and queue patches
+    const trackUpdatePromises = projectData.tracks.map(async track => {
       const trackKey = track._key;
-      const assetRef = track?.asset?._ref;
+      const assetRef = track?.asset?.asset?._ref;
       const currentDuration = track.duration;
 
       if (!trackKey || !assetRef) {
-        console.log(
-          `Skipping track (missing key or asset ref) in project ${projectIdForFetch}:`,
-          track
+        console.warn(
+          `Skipping track (missing _key or asset._ref) in project ${projectIdForFetch}: Key=${trackKey}, Ref=${assetRef}`
         );
-        continue;
+        return;
       }
 
       const audioUrl = assetUrlMap.get(assetRef);
-
       if (!audioUrl) {
-        console.log(
-          `Could not retrieve audio URL for asset ${assetRef} in track ${trackKey} of project ${projectIdForFetch}`
+        console.warn(
+          `Could not find URL for asset ${assetRef} (track ${trackKey}, project ${projectIdForFetch}).`
         );
-        continue;
+        return;
       }
 
+      // Use the updated getAudioDuration function
       const newDuration = await getAudioDuration(audioUrl);
-
       if (newDuration == null) {
-        console.log(
-          `Could not extract duration for ${audioUrl} (track ${trackKey}, project ${projectIdForFetch})`
+        console.warn(
+          `Could not extract duration for ${audioUrl} (track ${trackKey}, project ${projectIdForFetch}).`
         );
-        continue;
+        return;
       }
 
       if (currentDuration !== newDuration) {
         console.log(
-          `Updating duration for track ${trackKey} in project ${projectIdWithPotentialDraft} from ${currentDuration} to ${newDuration}` // Log with original ID
+          `Queueing duration update for track ${trackKey} in ${projectIdWithPotentialDraft}: ${currentDuration} -> ${newDuration}`
         );
-        // Use the path syntax to target the duration field of the specific track object
         patch.set({ [`tracks[_key=="${trackKey}"].duration`]: newDuration });
         updatesMade++;
       } else {
         console.log(
-          `Duration for track ${trackKey} in project ${projectIdForFetch} is already up-to-date (${newDuration}).`
+          `Duration for track ${trackKey} in ${projectIdForFetch} is already up-to-date (${newDuration}).`
         );
       }
-    } // End of track loop
+    });
 
-    // 8. Commit the Patch if changes were made
+    await Promise.all(trackUpdatePromises);
+
+    // 8. Commit the Patch Transaction if changes were queued
     if (updatesMade > 0) {
-      await patch.commit(); // Commits changes to the document identified by projectIdWithPotentialDraft
+      await patch.commit({
+        // Optional: Add conditions like ifRevisionID if needed
+        // ifRevisionID: projectData._rev
+      });
       console.log(
-        `Successfully patched ${updatesMade} track(s) in project ${projectIdWithPotentialDraft}.` // Log with original ID
+        `Successfully committed patches for ${updatesMade} track(s) in project ${projectIdWithPotentialDraft}.`
       );
       return NextResponse.json(
         {
@@ -285,21 +282,23 @@ export async function POST(req) {
         `No duration updates needed for project ${projectIdForFetch}.`
       );
       return NextResponse.json(
-        { message: 'All track durations already up-to-date.' },
+        { message: 'All track durations were already up-to-date.' },
         { status: 200 }
       );
     }
   } catch (error) {
     console.error(
-      `Error processing webhook for project ${projectIdWithPotentialDraft}:`,
+      `Error processing project ${projectIdWithPotentialDraft}:`,
       error
-    ); // Log with original ID
-    // Check if it's a Sanity client error vs other errors
+    );
     if (error.response && error.response.body) {
-      console.error('Sanity client error details:', error.response.body);
+      console.error(
+        'Sanity client error details:',
+        JSON.stringify(error.response.body, null, 2)
+      );
     }
     return NextResponse.json(
-      { message: 'Internal Server Error' },
+      { message: 'Internal Server Error processing webhook' },
       { status: 500 }
     );
   }
