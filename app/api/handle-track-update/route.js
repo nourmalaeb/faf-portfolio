@@ -1,8 +1,9 @@
 // /Users/nourmalaeb/Dev/personal/friends/faf-portfolio/app/api/handle-track-update/route.js
 import { createClient } from '@sanity/client';
 import * as musicMetadata from 'music-metadata';
-import crypto from 'crypto';
-import { NextResponse } from 'next/server'; // Use NextResponse for convenience
+// import crypto from 'crypto'; // Keep crypto if needed elsewhere, but not for signature verification now
+import { NextResponse } from 'next/server';
+import { isValidSignature, SIGNATURE_HEADER_NAME } from '@sanity/webhook'; // Import from the library
 
 // --- Configuration ---
 const SANITY_PROJECT_ID = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
@@ -10,17 +11,15 @@ const SANITY_DATASET = process.env.NEXT_PUBLIC_SANITY_DATASET;
 const SANITY_API_TOKEN = process.env.SANITY_API_TOKEN; // Needs write access
 const SANITY_WEBHOOK_SECRET = process.env.SANITY_WEBHOOK_SECRET;
 
-// Basic validation for environment variables
-if (
-  !SANITY_PROJECT_ID ||
-  !SANITY_DATASET ||
-  !SANITY_API_TOKEN ||
-  !SANITY_WEBHOOK_SECRET
-) {
-  console.error('Missing required Sanity environment variables');
-  // In a real app, you might throw an error during build or startup
-  // For a serverless function, returning an error response is appropriate
-  // Note: This check runs at deployment/startup time, not per-request
+// Ensure the secret is loaded once
+if (!SANITY_WEBHOOK_SECRET) {
+  console.error('Missing SANITY_WEBHOOK_SECRET environment variable');
+  // Throwing an error might be better here to prevent the function from running incorrectly
+  throw new Error('Missing SANITY_WEBHOOK_SECRET environment variable');
+}
+// Other env var checks (optional, depends on how critical they are at startup)
+if (!SANITY_PROJECT_ID || !SANITY_DATASET || !SANITY_API_TOKEN) {
+  console.warn('Missing other Sanity environment variables');
 }
 
 const sanityClient = createClient({
@@ -33,67 +32,23 @@ const sanityClient = createClient({
 
 // --- Helper Functions ---
 
-// Function to verify the webhook signature (Important for security!)
-async function verifyWebhookSignature(req) {
-  const signature = req.headers.get('sanity-signature');
-  // Log the received signature
-  console.log('Received Sanity Signature Header:', signature);
-
-  if (!signature) {
-    console.error('Missing sanity-signature header');
-    return { isValid: false, body: null };
+// Function to read the raw request body (needed for signature verification)
+// Adapted from @sanity/webhook README example
+async function readRawBody(readable) {
+  const chunks = [];
+  for await (const chunk of readable) {
+    chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
   }
-
-  // Ensure the secret is loaded (log only a small part for security)
-  const secretForVerification = SANITY_WEBHOOK_SECRET;
-  console.log(
-    'Using Secret (starts with):',
-    secretForVerification
-      ? secretForVerification.substring(0, 5) + '...'
-      : 'SECRET NOT LOADED!'
-  );
-  if (!secretForVerification) {
-    console.error('SANITY_WEBHOOK_SECRET is not loaded in the environment!');
-    return { isValid: false, body: null };
-  }
-
-  try {
-    const requestBodyArrayBuffer = await req.arrayBuffer();
-    const requestBodyBuffer = Buffer.from(requestBodyArrayBuffer);
-
-    // Log the length of the body being processed
-    console.log('Request Body Buffer Length:', requestBodyBuffer.length);
-
-    const computedSignature = crypto
-      .createHmac('sha256', secretForVerification) // Use the variable here
-      .update(requestBodyBuffer)
-      .digest('hex');
-
-    // Log the signature calculated by your function
-    console.log('Computed Signature:', computedSignature);
-
-    if (signature !== computedSignature) {
-      console.error('Signature mismatch!'); // More specific log
-      return { isValid: false, body: null };
-    }
-
-    // Log success before parsing body
-    console.log('Signature verified successfully.');
-
-    const parsedBody = JSON.parse(requestBodyBuffer.toString());
-    return { isValid: true, body: parsedBody };
-  } catch (error) {
-    console.error('Error during webhook signature verification:', error);
-    return { isValid: false, body: null };
-  }
+  // Returns the raw buffer, which isValidSignature can sometimes handle directly,
+  // but converting to utf8 string is generally safer and what the examples show.
+  return Buffer.concat(chunks).toString('utf8');
 }
 
-// Function to get audio duration
+// Function to get audio duration (remains the same)
 async function getAudioDuration(audioUrl) {
   if (!audioUrl) return null;
   try {
     const metadata = await musicMetadata.fetchFromUrl(audioUrl);
-    // Round duration to avoid potential floating point comparison issues
     return metadata?.format?.duration
       ? Math.round(metadata.format.duration)
       : null;
@@ -104,21 +59,67 @@ async function getAudioDuration(audioUrl) {
 }
 
 // --- Main Handler (POST for App Router) ---
+
+// Disable Next.js body parsing for this route
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
 export async function POST(req) {
-  // 1. Verify Signature
-  const { isValid, body } = await verifyWebhookSignature(req);
+  // 1. Read the raw body
+  const requestBodyString = await readRawBody(req.body); // Use req.body directly with bodyParser: false
+
+  // 2. Get the signature header
+  const signature = req.headers.get(SIGNATURE_HEADER_NAME);
+  if (!signature) {
+    console.error('Missing signature header');
+    return NextResponse.json(
+      { message: 'Unauthorized: Missing signature' },
+      { status: 401 }
+    );
+  }
+
+  // 3. Verify Signature using the library
+  let isValid = false;
+  try {
+    isValid = await isValidSignature(
+      requestBodyString, // The raw body string
+      signature, // The signature header
+      SANITY_WEBHOOK_SECRET // Your secret
+    );
+  } catch (error) {
+    console.error('Error verifying signature:', error);
+    // Treat errors during verification as invalid signature
+    isValid = false;
+  }
+
   if (!isValid) {
-    console.log('Webhook signature verification failed');
+    console.warn('Invalid webhook signature received.'); // Use warn level for failed attempts
     return NextResponse.json(
       { message: 'Unauthorized: Invalid signature' },
       { status: 401 }
     );
   }
 
-  // 2. Process Payload - Expecting a Project Document ID
-  const projectId = body?.ids?.updated?.[0] || body?.ids?.created?.[0]; // Get the ID of the updated/created document
+  console.log('Webhook signature verified successfully.');
 
-  // Check if it's a project document (adjust if your project IDs have a different prefix or none)
+  // 4. Parse the body *after* verification
+  let body;
+  try {
+    body = JSON.parse(requestBodyString);
+  } catch (error) {
+    console.error('Error parsing request body JSON:', error);
+    return NextResponse.json(
+      { message: 'Bad Request: Invalid JSON' },
+      { status: 400 }
+    );
+  }
+
+  // 5. Process Payload - Expecting a Project Document ID
+  const projectId = body?.ids?.updated?.[0] || body?.ids?.created?.[0];
+
   if (!projectId || !projectId.startsWith('project.')) {
     console.log(
       'Webhook received for non-project document or missing ID:',
@@ -126,15 +127,14 @@ export async function POST(req) {
     );
     return NextResponse.json(
       { message: 'Ignoring non-project document or missing ID' },
-      { status: 200 } // Acknowledge receipt but take no action
+      { status: 200 }
     );
   }
 
   console.log(`Processing update for project: ${projectId}`);
 
   try {
-    // 3. Fetch the Project Document from Sanity
-    // Select only the fields needed: _id and the tracks array with asset refs and current duration
+    // 6. Fetch the Project Document from Sanity
     const projectData = await sanityClient.fetch(
       `*[_id == $projectId][0]{
         _id,
@@ -159,14 +159,13 @@ export async function POST(req) {
       );
     }
 
-    // 4. Process Each Track in the Project
+    // 7. Process Each Track in the Project
     let updatesMade = 0;
-    const patch = sanityClient.patch(projectId); // Start a patch transaction for the project
+    const patch = sanityClient.patch(projectId);
 
-    // Fetch all referenced audio assets in one go for efficiency
     const assetIds = projectData.tracks
       .map(track => track?.asset?._ref)
-      .filter(Boolean); // Get valid asset refs
+      .filter(Boolean);
 
     if (assetIds.length === 0) {
       console.log(
@@ -184,16 +183,16 @@ export async function POST(req) {
     const assetUrlMap = new Map(assets.map(asset => [asset._id, asset.url]));
 
     for (const track of projectData.tracks) {
-      const trackKey = track._key; // Unique key for this item in the array
+      const trackKey = track._key;
       const assetRef = track?.asset?._ref;
-      const currentDuration = track.duration; // Existing duration in Sanity
+      const currentDuration = track.duration;
 
       if (!trackKey || !assetRef) {
         console.log(
           `Skipping track (missing key or asset ref) in project ${projectId}:`,
           track
         );
-        continue; // Skip if essential data is missing
+        continue;
       }
 
       const audioUrl = assetUrlMap.get(assetRef);
@@ -202,27 +201,22 @@ export async function POST(req) {
         console.log(
           `Could not retrieve audio URL for asset ${assetRef} in track ${trackKey} of project ${projectId}`
         );
-        continue; // Skip this track if URL is missing
+        continue;
       }
 
-      // 5. Get the duration
       const newDuration = await getAudioDuration(audioUrl);
 
       if (newDuration == null) {
-        // Checks for null or undefined
         console.log(
           `Could not extract duration for ${audioUrl} (track ${trackKey}, project ${projectId})`
         );
-        continue; // Skip if duration couldn't be extracted
+        continue;
       }
 
-      // 6. Add to Patch if Duration Changed
-      // Compare rounded new duration with existing duration
       if (currentDuration !== newDuration) {
         console.log(
           `Updating duration for track ${trackKey} in project ${projectId} from ${currentDuration} to ${newDuration}`
         );
-        // Use the path syntax to target the duration field of the specific track object
         patch.set({ [`tracks[_key=="${trackKey}"].duration`]: newDuration });
         updatesMade++;
       } else {
@@ -232,7 +226,7 @@ export async function POST(req) {
       }
     } // End of track loop
 
-    // 7. Commit the Patch if changes were made
+    // 8. Commit the Patch if changes were made
     if (updatesMade > 0) {
       await patch.commit();
       console.log(
@@ -253,6 +247,10 @@ export async function POST(req) {
     }
   } catch (error) {
     console.error(`Error processing webhook for project ${projectId}:`, error);
+    // Check if it's a Sanity client error vs other errors
+    if (error.response && error.response.body) {
+      console.error('Sanity client error details:', error.response.body);
+    }
     return NextResponse.json(
       { message: 'Internal Server Error' },
       { status: 500 }
