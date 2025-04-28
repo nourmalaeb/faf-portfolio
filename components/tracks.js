@@ -4,12 +4,6 @@ import AudioProgressBar from './audio-progress-bar';
 import './tracks.css';
 
 export default function AudioPlayer({ tracks }) {
-  if (!tracks || !tracks.length) {
-    return null;
-  }
-
-  // console.log(tracks);
-
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -170,6 +164,10 @@ export default function AudioPlayer({ tracks }) {
   }, [currentIndex, tracks.length]);
 
   // console.log(trackDurations);
+
+  if (!tracks || !tracks.length) {
+    return null;
+  }
 
   return (
     <div className="tracklist">
