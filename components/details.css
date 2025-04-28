@@ -1,17 +1,21 @@
 .details-container {
-  display: flex;
-  flex-direction: column;
+  /* display: flex;
+  flex-direction: column; */
   border-top: 0.5px solid var(--color-fg);
   margin-top: 1.5em;
+
+  container-name: details;
+  container-type: inline-size;
 }
 
 .detail {
+  width: 100%;
   display: grid;
   gap: 0.5em;
   align-items: center;
   padding: 0.5em 0;
   border-bottom: 0.5px solid var(--color-fg);
-  @media (min-width: 600px) {
+  @container (min-width: 600px) {
     grid-template-columns: 2fr 3fr;
   }
 }

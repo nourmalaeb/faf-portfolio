@@ -82,14 +82,17 @@ const Track = ({
   };
 
   useEffect(() => {
+    console.log('effect1');
     resetTrackTime();
-  }, [duration]);
+  }, [duration, resetTrackTime]);
 
   useEffect(() => {
+    console.log('effect2');
     isPlaying ? play() : pause();
-  }, [isPlaying]);
+  }, [isPlaying, play, pause]);
 
   useInterval(() => {
+    console.log('effect3');
     if (isPlaying) {
       updateTrackTime();
     }
@@ -104,8 +107,8 @@ const Track = ({
       <motion.div
         className="track-box"
         style={{ opacity: isPlaying ? 1 : nonePlaying ? 1 : 0.4 }}
-        initial={{ scale: 0.9 }}
-        whileInView={{ scale: 1 }}
+        // initial={{ scale: 0.9 }}
+        // whileInView={{ scale: 1 }}
       >
         <div className="track-title">
           <h5>{trackTitle}</h5>

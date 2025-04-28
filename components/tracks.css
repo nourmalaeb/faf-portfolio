@@ -1,0 +1,106 @@
+.track-box {
+  position: relative;
+  display: grid;
+  grid-template-columns: 4fr auto 1fr;
+  gap: 0.5em;
+  align-items: center;
+  transition:
+    background-color 0.2s ease,
+    opacity 0.2s ease;
+  &:hover {
+    opacity: 1 !important;
+    background-color: color(
+      from var(--color-bg) srgb calc(r + 0.1) calc(g + 0.1) calc(b + 0.1)
+    );
+  }
+
+  @media (min-width: 768px) {
+    grid-template-columns: 3fr auto 2fr;
+  }
+}
+
+.track-title {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.25em;
+  padding-bottom: 0.25em;
+}
+
+.track-time {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 0.8em;
+  width: 5ch;
+  user-select: none;
+}
+
+.play-pause {
+  background-color: transparent;
+  font-family: var(--font-mono), monospace;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  z-index: 2;
+  padding: 0.25em 0;
+  text-align: center;
+  opacity: 0;
+  transition:
+    opacity 0.2s ease,
+    background-color 0.2s ease;
+  color: var(--color-fg);
+  cursor: pointer !important;
+  &:hover {
+    background-color: color(
+      from var(--color-bg) srgb calc(r + 0.1) calc(g + 0.1) calc(b + 0.1) / 0.8
+    );
+    opacity: 1;
+  }
+}
+
+.seeker {
+  position: absolute;
+  width: 2px;
+  height: 0.5em;
+  background: var(--color-fg);
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  transition:
+    width 0.075s ease,
+    height 0.075s ease;
+}
+
+.seeker-box {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  &:hover .seeker {
+    width: 1px;
+    height: 100%;
+    transition:
+      width 0.075s ease,
+      height 0.075s ease;
+  }
+}
+
+.track-divider {
+  width: 100%;
+  height: 0;
+  border-top: 0.25px solid var(--color-fg);
+}
+
+.tracklist {
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
+
+.h3 {
+  margin-bottom: 0.5em;
+}
