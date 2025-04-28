@@ -1,5 +1,3 @@
-import AudioTrackWithDuration from '../lib/audioTrackWithDuration';
-
 export default {
   name: 'project',
   title: 'Project',

@@ -2,7 +2,6 @@
 import { createClient } from '@sanity/client';
 import * as musicMetadata from 'music-metadata';
 import crypto from 'crypto';
-import { buffer } from 'micro'; // micro is used by Vercel under the hood
 
 // --- Configuration ---
 // Get these from environment variables
@@ -32,29 +31,35 @@ const sanityClient = createClient({
 
 // Function to verify the webhook signature (Important for security!)
 async function verifyWebhookSignature(req) {
-  const signature = req.headers['sanity-signature'];
+  // req is a standard Request object
+  const signature = req.headers.get('sanity-signature'); // Use .get() for Headers object
   if (!signature) {
     console.error('Missing sanity-signature header');
-    return false;
+    return { isValid: false, body: null }; // Return an object for clarity
   }
 
   try {
-    // Read the raw body buffer - crucial for signature verification
-    const requestBody = await buffer(req);
+    // Read the raw body as ArrayBuffer
+    const requestBodyArrayBuffer = await req.arrayBuffer();
+    // Convert ArrayBuffer to Node.js Buffer for crypto
+    const requestBodyBuffer = Buffer.from(requestBodyArrayBuffer);
+
     const computedSignature = crypto
       .createHmac('sha256', SANITY_WEBHOOK_SECRET)
-      .update(requestBody) // Use the raw buffer
+      .update(requestBodyBuffer) // Use the Node.js Buffer
       .digest('hex');
 
     if (signature !== computedSignature) {
       console.error('Invalid webhook signature');
-      return false;
+      return { isValid: false, body: null };
     }
-    // If signature is valid, return the parsed body (as JSON)
-    return JSON.parse(requestBody.toString());
+
+    // If signature is valid, parse the body (as JSON) from the buffer
+    const parsedBody = JSON.parse(requestBodyBuffer.toString());
+    return { isValid: true, body: parsedBody };
   } catch (error) {
     console.error('Error verifying webhook signature:', error);
-    return false;
+    return { isValid: false, body: null };
   }
 }
 
@@ -73,99 +78,107 @@ async function getAudioDuration(audioUrl) {
 }
 
 // --- Main Handler ---
-export default async function handler(req, res) {
-  // 1. Only allow POST requests
-  if (req.method !== 'POST') {
-    console.log('Received non-POST request');
-    res.setHeader('Allow', 'POST');
-    return res.status(405).json({ message: 'Method Not Allowed' });
-  }
-
-  // 2. Verify Signature and get body
-  const body = await verifyWebhookSignature(req);
-  if (!body) {
+// Use POST function for App Router convention
+export async function POST(req) {
+  // 1. Signature Verification (Method check is implicit with POST export)
+  const { isValid, body } = await verifyWebhookSignature(req);
+  if (!isValid) {
     console.log('Webhook signature verification failed');
-    return res.status(401).json({ message: 'Unauthorized: Invalid signature' });
+    // Use NextResponse for App Router responses
+    return new Response(
+      JSON.stringify({ message: 'Unauthorized: Invalid signature' }),
+      { status: 401 }
+    );
   }
 
-  // 3. Process the webhook payload
-  // The structure depends slightly on your webhook config, but usually contains document IDs
-  const documentId = body?._id; // Get the ID of the changed document
+  // 2. Process the webhook payload
+  const documentId = body?._id;
 
+  // Use NextResponse for responses
   if (!documentId || !documentId.startsWith('audioTrack.')) {
-    // Check if it's a track document
+    // Check your schema type name
     console.log(
       'Webhook received for non-track document or missing ID:',
       documentId
     );
-    return res
-      .status(200)
-      .json({ message: 'Ignoring non-track document or missing ID' });
+    return new Response(
+      JSON.stringify({ message: 'Ignoring non-track document or missing ID' }),
+      { status: 200 }
+    );
   }
 
   console.log(`Processing update for document: ${documentId}`);
 
   try {
-    // 4. Fetch the latest document data from Sanity (including the audio file URL)
-    // Ensure your schema name is 'track' and the file field is 'audioFile'
+    // 3. Fetch the latest document data from Sanity
     const currentTrackData = await sanityClient.getDocument(documentId);
 
     if (!currentTrackData) {
       console.log(`Document ${documentId} not found.`);
-      return res.status(404).json({ message: 'Document not found' });
+      return new Response(JSON.stringify({ message: 'Document not found' }), {
+        status: 404,
+      });
     }
 
     const audioAssetId = currentTrackData?.audioFile?.asset?._ref;
     if (!audioAssetId) {
       console.log(`No audio file asset reference found for ${documentId}`);
-      return res
-        .status(200)
-        .json({ message: 'No audio file asset found, skipping.' });
+      return new Response(
+        JSON.stringify({ message: 'No audio file asset found, skipping.' }),
+        { status: 200 }
+      );
     }
 
-    // 5. Fetch the asset document to get the URL
+    // 4. Fetch the asset document to get the URL
     const audioAsset = await sanityClient.getDocument(audioAssetId);
     const audioUrl = audioAsset?.url;
 
     if (!audioUrl) {
       console.log(`Could not retrieve audio URL for asset ${audioAssetId}`);
-      return res.status(404).json({ message: 'Audio asset URL not found' });
+      return new Response(
+        JSON.stringify({ message: 'Audio asset URL not found' }),
+        { status: 404 }
+      );
     }
 
-    // 6. Get the duration
+    // 5. Get the duration
     const duration = await getAudioDuration(audioUrl);
 
     if (duration === null || duration === undefined) {
       console.log(`Could not extract duration for ${audioUrl}`);
-      // Decide if you want to patch with null/0 or just skip
-      return res
-        .status(200)
-        .json({ message: 'Could not extract duration, skipping patch.' });
+      return new Response(
+        JSON.stringify({
+          message: 'Could not extract duration, skipping patch.',
+        }),
+        { status: 200 }
+      );
     }
 
     console.log(`Extracted duration for ${documentId}: ${duration} seconds`);
 
-    // 7. Patch the Sanity document with the duration
-    // Only patch if the duration is different from the current value to avoid loops
+    // 6. Patch the Sanity document
     if (currentTrackData.duration !== duration) {
-      await sanityClient
-        .patch(documentId)
-        .set({ duration: duration }) // Set the 'duration' field
-        .commit();
+      await sanityClient.patch(documentId).set({ duration: duration }).commit();
       console.log(
         `Successfully patched ${documentId} with duration: ${duration}`
       );
-      return res
-        .status(200)
-        .json({ message: 'Duration updated successfully', duration });
+      return new Response(
+        JSON.stringify({ message: 'Duration updated successfully', duration }),
+        { status: 200 }
+      );
     } else {
       console.log(
         `Duration for ${documentId} is already up-to-date (${duration}). No patch needed.`
       );
-      return res.status(200).json({ message: 'Duration already up-to-date.' });
+      return new Response(
+        JSON.stringify({ message: 'Duration already up-to-date.' }),
+        { status: 200 }
+      );
     }
   } catch (error) {
     console.error(`Error processing webhook for ${documentId}:`, error);
-    return res.status(500).json({ message: 'Internal Server Error' });
+    return new Response(JSON.stringify({ message: 'Internal Server Error' }), {
+      status: 500,
+    });
   }
 }
