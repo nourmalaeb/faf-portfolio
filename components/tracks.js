@@ -6,8 +6,6 @@ import './tracks.css';
 export default function AudioPlayer({ tracks }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(0.8);
   const [trackDurations, setTrackDurations] = useState({});
   const [trackProgresses, setTrackProgresses] = useState({});
@@ -61,11 +59,10 @@ export default function AudioPlayer({ tracks }) {
       if (!audio) return;
 
       const track = tracks[currentIndex];
-      audio.src = track.ogg;
+      audio.src = track.mp3;
 
       // Set up event listeners
       const updateTime = () => {
-        setCurrentTime(audio.currentTime);
         setTrackProgresses(prev => ({
           ...prev,
           [track._key]: audio.currentTime,
@@ -74,7 +71,6 @@ export default function AudioPlayer({ tracks }) {
 
       const handleEnded = () => {
         setIsPlaying(false);
-        setCurrentTime(0);
         setTrackProgresses(prev => ({
           ...prev,
           [track._key]: 0,
