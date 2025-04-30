@@ -10,91 +10,44 @@ export default function AudioPlayer({ tracks }) {
   const [trackProgresses, setTrackProgresses] = useState({});
 
   const audioRef = useRef(null);
+  const intervalRef = useRef(null);
+  const isReadyRef = useRef(false);
 
   // initialize audio component on mount
   useEffect(() => {
     const audio = new Audio();
     audioRef.current = audio;
-
     audio.volume = volume;
+    audio.preload = 'metadata';
+
+    const handleSrcChange = () => (isReadyRef.current = false);
+    audio.addEventListener('emptied', handleSrcChange);
 
     return () => {
-      audio.pause();
-      audio.src = '';
+      clearInterval(intervalRef.current); // Clear interval on unmount
+      if (audioRef.current) {
+        audioRef.current.removeEventListener('emptied', handleSrcChange);
+        audioRef.current.pause();
+        audioRef.current.src = '';
+      }
+      audioRef.current = null;
     };
   }, []);
-
-  // Handle track selection change
-  useEffect(() => {
-    if (currentIndex >= 0 && tracks.length > currentIndex) {
-      const audio = audioRef.current;
-      if (!audio) return;
-
-      const track = tracks[currentIndex];
-      audio.src = track.url;
-
-      // Set up event listeners
-      const updateTime = () => {
-        setTrackProgresses(prev => ({
-          ...prev,
-          [track._key]: audio.currentTime,
-        }));
-      };
-
-      const handleEnded = () => {
-        setIsPlaying(false);
-        setTrackProgresses(prev => ({
-          ...prev,
-          [track._key]: 0,
-        }));
-      };
-
-      audio.addEventListener('timeupdate', updateTime);
-      audio.addEventListener('ended', handleEnded);
-
-      if (isPlaying) {
-        audio.play().catch(err => {
-          console.error('Failed to play audio:', err);
-          setIsPlaying(false);
-        });
-      }
-
-      return () => {
-        audio.removeEventListener('timeupdate', updateTime);
-        audio.removeEventListener('ended', handleEnded);
-      };
-    }
-  }, [currentIndex, tracks, isPlaying]);
-
-  // Update audio volume when volume state changes
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume;
-    }
-  }, [volume]);
 
   // Handle track selection
   const handleTrackSelect = useCallback(
     index => {
       if (index === currentIndex) {
-        const audio = audioRef.current;
-        if (!audio) return;
-
-        if (isPlaying) {
-          audio.pause();
-          setIsPlaying(false);
-        } else {
-          audio
-            .play()
-            .catch(err => console.error('Failed to play audio:', err));
-          setIsPlaying(true);
-        }
+        console.log(
+          `CLICKED ${index}, CURRENTINDEX IS ${currentIndex}, ISPLAYING IS ${isPlaying}`
+        );
+        setIsPlaying(prev => !prev);
       } else {
         setCurrentIndex(index);
         setIsPlaying(true);
       }
     },
-    [currentIndex, isPlaying]
+    [currentIndex]
   );
 
   // Handle seeking
@@ -102,17 +55,17 @@ export default function AudioPlayer({ tracks }) {
     (trackKey, time) => {
       const trackIndex = tracks.findIndex(t => t._key === trackKey);
       if (trackIndex === -1) return;
-
       const audio = audioRef.current;
       if (!audio) return;
-
-      if (trackIndex !== currentIndex) return;
-
-      audio.currentTime = time;
       setTrackProgresses(prev => ({
         ...prev,
         [trackKey]: time,
       }));
+      if (trackIndex === currentIndex) {
+        if (isReadyRef.current && audio.readyState >= audio.HAVE_METADATA) {
+          audio.currentTime = time;
+        }
+      }
     },
     [tracks, currentIndex]
   );
@@ -121,15 +74,141 @@ export default function AudioPlayer({ tracks }) {
   const handlePrevTrack = useCallback(() => {
     if (currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
+      setIsPlaying(true);
     }
   }, [currentIndex]);
 
   // Handle next track
   const handleNextTrack = useCallback(() => {
-    if (currentIndex < tracks.length - 1) {
-      setCurrentIndex(currentIndex + 1);
+    const nextIndex = currentIndex + 1;
+    if (nextIndex < tracks.length) {
+      setCurrentIndex(nextIndex);
+      setIsPlaying(true);
     }
   }, [currentIndex, tracks.length]);
+
+  // Handle track loading, playback state, listeners, and progress update
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || currentIndex < 0 || currentIndex >= tracks.length) return;
+
+    const track = tracks[currentIndex];
+
+    // Track loading
+    if (audio.src !== track.url) {
+      audio.pause();
+      clearInterval(intervalRef.current);
+      audio.src = track.url;
+      // Optionally reset progress visually, or keep existing state
+      // Keeping existing state allows resuming if track is re-selected
+      setTrackProgresses(prev => ({
+        ...prev,
+        [track._key]: prev[track._key] || 0, // Initialize progress if not set
+      }));
+    }
+
+    // Set up event listeners
+
+    const handleMetadataLoaded = () => {
+      const storedProgress = trackProgresses[track._key] || 0;
+      if (
+        audio.src === track.url &&
+        storedProgress > 0 &&
+        Math.abs(audio.currentTime - storedProgress) > 0.1
+      ) {
+        audio.currentTime = storedProgress;
+      }
+      isReadyRef.current = true;
+
+      if (isPlaying) {
+        attemptPlay();
+      }
+    };
+
+    const handleCanPlay = () => {
+      isReadyRef.current = true;
+      if (isPlaying) {
+        attemptPlay();
+      }
+    };
+
+    const handleEnded = () => {
+      setTrackProgresses(prev => ({
+        ...prev,
+        [track._key]: 0,
+      }));
+      handleNextTrack();
+    };
+
+    const updateTime = () => {
+      if (audio.src === track.url && !audio.seeking) {
+        setTrackProgresses(prev => ({
+          ...prev,
+          [track._key]: audio.currentTime,
+        }));
+      } else {
+        clearInterval(intervalRef.current);
+      }
+    };
+
+    // Remove previous listener before adding new one to prevent duplicates
+    // Note: Defining handleEnded inside means a new function instance each time.
+    // The cleanup function handles removal correctly.
+    audio.addEventListener('loadedmetadata', handleMetadataLoaded);
+    audio.addEventListener('canplay', handleCanPlay);
+    audio.addEventListener('ended', handleEnded);
+
+    const attemptPlay = () => {
+      if (!isReadyRef.current || audio.src !== track.url) return;
+
+      const playPromise = audio.play();
+
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            clearInterval(intervalRef.current);
+            intervalRef.current = setInterval(updateTime, 50);
+          })
+          .catch(error => {
+            console.error(`Error playing track ${track._key}:`, error);
+            setIsPlaying(false);
+            clearInterval(intervalRef.current);
+          });
+      }
+    };
+
+    // --- Playback and Interval Control ---
+    if (isPlaying) {
+      // Attempt to play the audio
+      console.log(`PLAYING ${currentIndex}`);
+      if (isReadyRef.current && audio.src === track.url) {
+        attemptPlay();
+      } else {
+        console.log('PAUSING');
+        audio.pause();
+        clearInterval(intervalRef.current);
+      }
+    } else {
+      console.log(`PAUSING ${currentIndex}`);
+      audio.pause();
+      clearInterval(intervalRef.current);
+    }
+
+    // --- Cleanup ---
+    return () => {
+      audio.removeEventListener('loadedmetadata', handleMetadataLoaded);
+      audio.removeEventListener('canplay', handleCanPlay);
+      audio.removeEventListener('ended', handleEnded);
+      clearInterval(intervalRef.current);
+    };
+  }, [currentIndex, tracks, isPlaying, trackProgresses, handleNextTrack]);
+
+  // Update audio volume when volume state changes
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume]);
 
   if (!tracks || !tracks.length) {
     return null;
