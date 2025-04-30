@@ -9,7 +9,11 @@ export const structure = S =>
         .title('Home Page')
         .icon(HomeIcon)
         .child(S.document().schemaType('homePage').documentId('homePage')),
+      S.listItem()
+        .title('About Page')
+        .icon(HomeIcon)
+        .child(S.document().schemaType('aboutPage').documentId('aboutPage')),
       ...S.documentTypeListItems().filter(
-        listItem => !['homePage'].includes(listItem.getId())
+        listItem => !['homePage', 'aboutPage'].includes(listItem.getId())
       ),
     ]);

@@ -54,26 +54,6 @@ export default {
         },
       ],
     },
-    // {
-    //   name: 'tracks',
-    //   title: 'Tracks',
-    //   type: 'array',
-    //   of: [
-    //     {
-    //       type: 'object',
-    //       name: 'track',
-    //       fields: [
-    //         { type: 'string', name: 'title' },
-    //         { type: 'file', name: 'mp3', title: 'MP3' },
-    //         {
-    //           type: 'file',
-    //           name: 'ogg',
-    //           description: 'Optional (open codec audio format)',
-    //         },
-    //       ],
-    //     },
-    //   ],
-    // },
     {
       name: 'tracks',
       title: 'Tracks',

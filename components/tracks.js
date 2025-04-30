@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import VolumeInput from './volume-input';
+import { motion } from 'motion/react';
 import AudioProgressBar from './audio-progress-bar';
 import './tracks.css';
 
@@ -293,7 +293,12 @@ const TrackItem = React.memo(
     const trackBoxClasses = `track-box${isPlaying ? (isCurrent ? '' : ' dim') : ''}`;
 
     return (
-      <div className={trackBoxClasses}>
+      <motion.div
+        className={trackBoxClasses}
+        initial={{ scaleX: 0.95 }}
+        whileInView={{ scaleX: 1 }}
+        transition={{ duration: 0.5, ease: [0.17, 0.84, 0.44, 1] }}
+      >
         <div className="track-title">
           <h5>{track.title}</h5>
           <button onClick={handleClick} className="play-pause" type="button">
@@ -310,7 +315,7 @@ const TrackItem = React.memo(
           onSeek={handleSeekRequest}
           name={track.key}
         />
-      </div>
+      </motion.div>
     );
   }
 );

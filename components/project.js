@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import Tracks from './audio-player';
 import { PortableText } from '@portabletext/react';
 import './project.css';
 import { urlFor } from '../sanity/lib/image';
