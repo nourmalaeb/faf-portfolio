@@ -17,7 +17,7 @@ export default function AudioPlayer({ tracks }) {
   useEffect(() => {
     const audio = new Audio();
     audioRef.current = audio;
-    audio.volume = volume;
+    // audio.volume = volume;
     audio.preload = 'metadata';
 
     const handleSrcChange = () => (isReadyRef.current = false);
@@ -287,7 +287,7 @@ const TrackItem = React.memo(
     );
     const handleSeekRequest = useCallback(
       time => onSeek(track._key, time),
-      [onSeek, index]
+      [onSeek, index, track._key]
     );
 
     const trackBoxClasses = `track-box${isPlaying ? (isCurrent ? '' : ' dim') : ''}`;
