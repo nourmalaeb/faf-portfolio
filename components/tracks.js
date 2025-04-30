@@ -37,12 +37,11 @@ export default function AudioPlayer({ tracks }) {
   // Handle track selection
   const handleTrackSelect = useCallback(
     index => {
+      // When selecting current track, toggle play/pause
       if (index === currentIndex) {
-        console.log(
-          `CLICKED ${index}, CURRENTINDEX IS ${currentIndex}, ISPLAYING IS ${isPlaying}`
-        );
         setIsPlaying(prev => !prev);
       } else {
+        // when selecting new track, play new track
         setCurrentIndex(index);
         setIsPlaying(true);
       }
@@ -54,13 +53,15 @@ export default function AudioPlayer({ tracks }) {
   const handleSeek = useCallback(
     (trackKey, time) => {
       const trackIndex = tracks.findIndex(t => t._key === trackKey);
-      if (trackIndex === -1) return;
+      if (trackIndex === -1) return; // can't find track
       const audio = audioRef.current;
-      if (!audio) return;
+      if (!audio) return; // no audio object
+      // Update progress for track in state
       setTrackProgresses(prev => ({
         ...prev,
         [trackKey]: time,
       }));
+      // Update audio.currentTime for currently active track
       if (trackIndex === currentIndex) {
         if (isReadyRef.current && audio.readyState >= audio.HAVE_METADATA) {
           audio.currentTime = time;
@@ -110,16 +111,19 @@ export default function AudioPlayer({ tracks }) {
     // Set up event listeners
 
     const handleMetadataLoaded = () => {
+      // get the progress for the current track
       const storedProgress = trackProgresses[track._key] || 0;
       if (
-        audio.src === track.url &&
-        storedProgress > 0 &&
-        Math.abs(audio.currentTime - storedProgress) > 0.1
+        audio.src === track.url && // current track
+        storedProgress > 0 && // the track has progressed
+        Math.abs(audio.currentTime - storedProgress) > 0.1 // the progress is perceptible
       ) {
         audio.currentTime = storedProgress;
       }
+      // the track is ready!
       isReadyRef.current = true;
 
+      // Play it if we should be playing
       if (isPlaying) {
         attemptPlay();
       }
@@ -180,16 +184,13 @@ export default function AudioPlayer({ tracks }) {
     // --- Playback and Interval Control ---
     if (isPlaying) {
       // Attempt to play the audio
-      console.log(`PLAYING ${currentIndex}`);
       if (isReadyRef.current && audio.src === track.url) {
         attemptPlay();
       } else {
-        console.log('PAUSING');
         audio.pause();
         clearInterval(intervalRef.current);
       }
     } else {
-      console.log(`PAUSING ${currentIndex}`);
       audio.pause();
       clearInterval(intervalRef.current);
     }
