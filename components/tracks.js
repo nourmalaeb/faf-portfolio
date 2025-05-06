@@ -288,7 +288,7 @@ const TrackItem = React.memo(
     );
     const handleSeekRequest = useCallback(
       time => onSeek(track._key, time),
-      [onSeek, index, track._key]
+      [onSeek, track._key]
     );
 
     const trackBoxClasses = `track-box${isPlaying ? (isCurrent ? '' : ' dim') : ''}`;

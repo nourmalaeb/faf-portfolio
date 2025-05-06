@@ -2,6 +2,7 @@ import '../styles/reset.css';
 import '../styles/globals.css';
 import styles from './app.module.css';
 import { body, mono, header } from './fonts';
+import { ReactLenis } from '../components/utils/lenis';
 
 export const metadata = {
   title: 'Firas Abou Fakher • Composer • Producer • Director',
@@ -15,7 +16,9 @@ export default function RootLayout({ children }) {
       className={`${mono.variable} ${body.variable} ${header.variable}`}
       style={{ scrollBehavior: 'smooth' }}
     >
-      <body className={styles.root}>{children}</body>
+      <ReactLenis root>
+        <body className={styles.root}>{children}</body>
+      </ReactLenis>
     </html>
   );
 }
