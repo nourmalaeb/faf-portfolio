@@ -1,10 +1,10 @@
 'use client';
 
-import Project from '../components/project';
+import Project from '../../components/project';
 import { motion } from 'motion/react';
 import './homepage.css';
-import Header from '../components/header';
-import { PortableTextRenderer } from '../components/portableTextRenderer';
+import Header from '../../components/header';
+import { PortableTextRenderer } from '../../components/portableTextRenderer';
 
 const HomePage = ({ data }) => {
   // console.log(projects);

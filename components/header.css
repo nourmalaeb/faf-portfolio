@@ -32,10 +32,12 @@ header {
     }
   }
 
-  .active a,
-  a.active {
-    font-weight: 600;
-    color: var(--color-emph);
+  @media (min-width: 720px) {
+    .active a,
+    a.active {
+      font-weight: 600;
+      color: var(--color-emph);
+    }
   }
 }
 

@@ -1,8 +1,9 @@
-import '../styles/reset.css';
-import '../styles/globals.css';
+import '../../styles/reset.css';
+import '../../styles/globals.css';
 import styles from './app.module.css';
-import { body, mono, header } from './fonts';
-import { ReactLenis } from '../components/utils/lenis';
+import { body, mono, header } from '../../components/utils/fonts';
+import { ReactLenis } from '../../components/utils/lenis';
+import 'lenis/dist/lenis.css';
 
 export const metadata = {
   title: 'Firas Abou Fakher • Composer • Producer • Director',
