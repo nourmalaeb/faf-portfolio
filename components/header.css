@@ -95,7 +95,12 @@ h1 {
 }
 
 .theme-switcher {
-  position: absolute;
-  bottom: 1em;
-  left: 1em;
+  position: relative;
+  margin-top: 32px;
+
+  @media (min-width: 720px) {
+    position: absolute;
+    bottom: 1em;
+    left: 1em;
+  }
 }
