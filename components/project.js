@@ -29,14 +29,14 @@ const Project = ({ project }) => {
       <div
         className="thumb mobile-thumb"
         style={{
-          marginBottom: `-${100 * thumbnail.asset.metadata.dimensions.aspectRatio}vw`,
+          height: 100 / thumbnail.asset.metadata.dimensions.aspectRatio + 'vw',
         }}
       >
         <ProjectImage thumb={thumbnail} opacity={scrollYProgress} />
       </div>
       <div
         className="thumb big-thumb"
-        style={{ aspectRatio: thumbnail.asset.metadata.dimensions.aspectRatio }}
+        // style={{ aspectRatio: thumbnail.asset.metadata.dimensions.aspectRatio }}
       >
         <Image
           src={urlFor(thumbnail).width(1000).url()}
@@ -89,6 +89,7 @@ const ProjectImage = ({ thumb, opacity }) => {
       style={{
         // boxShadow: `0 0 30px -5px ${thumbnail.asset.metadata.palette.darkVibrant.background}`,
         // filter,
+        height: '100vh',
         backgroundImage: `url(${backgroundUrl})`,
         backgroundSize,
         backgroundPosition: 'top center',
