@@ -4,7 +4,7 @@ header {
   z-index: 1;
   width: 100%;
   padding: 1em;
-  @media (min-width: 720px) {
+  @media (min-width: 768px) {
     width: 600px;
     max-width: 25vw;
     min-width: 200px;
@@ -33,7 +33,7 @@ header {
     }
   }
 
-  @media (min-width: 720px) {
+  @media (min-width: 768px) {
     .active a,
     a.active {
       font-weight: 600;
@@ -98,7 +98,7 @@ h1 {
   position: relative;
   margin-top: 32px;
 
-  @media (min-width: 720px) {
+  @media (min-width: 768px) {
     position: absolute;
     bottom: 1em;
     left: 1em;

@@ -81,7 +81,7 @@
     );
     opacity: 1;
   }
-  @media (min-width: 720px) {
+  @media (min-width: 768px) {
     display: block;
   }
 }
@@ -95,7 +95,7 @@
   background-color: transparent;
   display: grid;
   place-items: center;
-  @media (min-width: 720px) {
+  @media (min-width: 768px) {
     display: none;
   }
 }

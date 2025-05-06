@@ -17,12 +17,12 @@ export const {
     },
   },
   media: {
-    bp1: '(min-width: 720px)',
+    bp1: '(min-width: 768px)',
   },
   utils: {
-    marginX: (value) => ({ marginLeft: value, marginRight: value }),
-    marginY: (value) => ({ marginTop: value, marginBottom: value }),
-    paddingX: (value) => ({ paddingLeft: value, paddingRight: value }),
-    paddingY: (value) => ({ paddingTop: value, paddingBottom: value }),
+    marginX: value => ({ marginLeft: value, marginRight: value }),
+    marginY: value => ({ marginTop: value, marginBottom: value }),
+    paddingX: value => ({ paddingLeft: value, paddingRight: value }),
+    paddingY: value => ({ paddingTop: value, paddingBottom: value }),
   },
 });

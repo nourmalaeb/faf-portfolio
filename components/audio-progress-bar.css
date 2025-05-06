@@ -52,7 +52,7 @@
   z-index: 1;
 }
 
-@media (min-width: 720px) {
+@media (min-width: 768px) {
   .audio-progress-bar:hover .audio-progress-hover-bar {
     opacity: 0.5;
   }
