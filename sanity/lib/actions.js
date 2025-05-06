@@ -1,3 +1,5 @@
+// Adapted from https://github.com/amcc/sanity-slugify
+
 import speakingurl from 'speakingurl';
 import { useDocumentOperation } from 'sanity';
 

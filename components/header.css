@@ -29,6 +29,7 @@ header {
     &:hover {
       /* background-color: black; */
       color: var(--color-emph);
+      font-weight: 450;
     }
   }
 
@@ -91,4 +92,10 @@ h1 {
     display: block;
     padding: 0;
   }
+}
+
+.theme-switcher {
+  position: absolute;
+  bottom: 1em;
+  left: 1em;
 }

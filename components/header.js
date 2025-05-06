@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import './header.css';
+import ThemeSwitch from './theme-switch';
 
 const Header = ({ projects }) => {
   const [activeSlug, setActiveSlug] = useState(null);
@@ -75,6 +76,15 @@ const Header = ({ projects }) => {
         <a href="#about" className={activeSlug === 'about' ? 'active' : ''}>
           About
         </a>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 2, ease: [0.17, 0.84, 0.44, 1] }}
+        className="theme-switcher"
+      >
+        <ThemeSwitch />
       </motion.div>
     </header>
   );

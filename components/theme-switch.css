@@ -1,0 +1,53 @@
+button {
+  all: unset;
+}
+
+.ToggleGroup {
+  display: inline-flex;
+  background-color: color(
+    from var(--color-bg) srgb calc(r - 0.075) calc(g - 0.075) calc(b - 0.075)
+  );
+  border-radius: 8px;
+  box-shadow: 0 2px 10px var(--color-bg);
+}
+
+.ToggleGroupItem {
+  background-color: color(
+    from var(--color-bg) srgb calc(r - 0.075) calc(g - 0.075) calc(b - 0.075)
+  );
+  color: var(--color-fg);
+  height: 32px;
+  width: 32px;
+  display: flex;
+  font-size: 16px;
+  line-height: 1;
+  align-items: center;
+  justify-content: center;
+  margin-left: 1px;
+  user-select: none;
+}
+.ToggleGroupItem:hover {
+  background-color: color(
+    from var(--color-bg) srgb calc(r + 0.075) calc(g + 0.075) calc(b + 0.075)
+  );
+}
+.ToggleGroupItem:first-child {
+  margin-left: 0;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+.ToggleGroupItem:last-child,
+.ToggleGroupItem:last-child:hover {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+.ToggleGroupItem[aria-checked='true'] {
+  background-color: color(
+    from var(--color-bg) srgb calc(r + 0.075) calc(g + 0.075) calc(b + 0.075)
+  );
+  color: var(--color-emph);
+}
+.ToggleGroupItem:focus {
+  position: relative;
+  box-shadow: 0 0 0 2px black;
+}

@@ -4,6 +4,7 @@ import styles from './app.module.css';
 import { body, mono, header } from '../../components/utils/fonts';
 import { ReactLenis } from '../../components/utils/lenis';
 import 'lenis/dist/lenis.css';
+import { ThemeProvider } from 'next-themes';
 
 export const metadata = {
   title: 'Firas Abou Fakher • Composer • Producer • Director',
@@ -16,9 +17,12 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${mono.variable} ${body.variable} ${header.variable}`}
       style={{ scrollBehavior: 'smooth' }}
+      suppressHydrationWarning
     >
       <ReactLenis root>
-        <body className={styles.root}>{children}</body>
+        <ThemeProvider>
+          <body className={styles.root}>{children}</body>
+        </ThemeProvider>
       </ReactLenis>
     </html>
   );
