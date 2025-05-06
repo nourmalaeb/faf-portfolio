@@ -31,5 +31,7 @@ section#about {
   h2 {
     font-family: var(--font-header);
     font-size: 3em;
+    line-height: 0.95;
+    margin-bottom: 0.5em;
   }
 }

@@ -47,23 +47,21 @@ const Project = ({ project }) => {
       <div className="project-body">
         <h2 className="title">{title}</h2>
         {subtitle && <h3 className="subtitle">{subtitle}</h3>}
-        <div className="project-info">
-          <div>
-            <PortableText value={description} />
-            {/* <p style={{ fontStyle: `italic` }}>{project.date}</p> */}
-            {tags && (
-              <div className="project-tags">
-                {tags.map((tag, idx) => (
-                  <span
-                    className="tag font-mono"
-                    key={`tag-${project.__id}-${idx}`}
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
+        {tags && (
+          <div className="project-tags">
+            {tags.map((tag, idx) => (
+              <span
+                className="tag font-mono"
+                key={`tag-${project.__id}-${idx}`}
+              >
+                {tag}
+              </span>
+            ))}
           </div>
+        )}
+        <div>
+          <PortableText value={description} />
+          {/* <p style={{ fontStyle: `italic` }}>{project.date}</p> */}
         </div>
         {details && details.length > 0 && <Details details={details} />}
         {/* {tracks && <Tracks tracklist={tracks} />} */}
