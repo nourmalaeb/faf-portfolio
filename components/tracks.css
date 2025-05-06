@@ -1,7 +1,7 @@
 .track-box {
   position: relative;
   display: grid;
-  grid-template-columns: 4fr auto 1fr;
+  grid-template-columns: auto 4fr auto 1fr;
   gap: 0.5em;
   align-items: center;
   transition:
@@ -56,6 +56,7 @@
 }
 
 .play-pause {
+  display: none;
   background-color: transparent;
   font-family: var(--font-mono), monospace;
   position: absolute;
@@ -79,6 +80,23 @@
         calc(b + 0.075) / 0.8
     );
     opacity: 1;
+  }
+  @media (min-width: 720px) {
+    display: block;
+  }
+}
+
+.play-pause-mobile {
+  color: var(--color-fg);
+  border: none;
+  border-left: 0.5px solid var(--color-fg);
+  border-right: 0.5px solid var(--color-fg);
+  height: 100%;
+  background-color: transparent;
+  display: grid;
+  place-items: center;
+  @media (min-width: 720px) {
+    display: none;
   }
 }
 

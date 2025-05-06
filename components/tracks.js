@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import AudioProgressBar from './audio-progress-bar';
 import './tracks.css';
+import { Pause, Play } from 'lucide-react';
 
 export default function AudioPlayer({ tracks }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -300,6 +301,13 @@ const TrackItem = React.memo(
         whileInView={{ scaleX: 1 }}
         transition={{ duration: 0.5, ease: [0.17, 0.84, 0.44, 1] }}
       >
+        <button
+          onClick={handleClick}
+          className="play-pause-mobile"
+          type="button"
+        >
+          {isPlaying && isCurrent ? <Pause size={16} /> : <Play size={16} />}
+        </button>
         <div className="track-title">
           <h5>{track.title}</h5>
           <button onClick={handleClick} className="play-pause" type="button">

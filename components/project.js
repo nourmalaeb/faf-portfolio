@@ -12,7 +12,7 @@ import {
   useScroll,
   useTransform,
 } from 'motion/react';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import AudioPlayer from './tracks';
 import { useTheme } from 'next-themes';
 
@@ -83,6 +83,12 @@ const ProjectImage = ({ thumb, opacity }) => {
   const aspectRatio = thumb.asset.metadata.dimensions.aspectRatio;
 
   const { resolvedTheme } = useTheme();
+  const [overlayOpacity, setOverlayOpacity] = useState(0.85);
+
+  useEffect(() => {
+    setOverlayOpacity(resolvedTheme === 'light' ? 0.85 : 0.5);
+  }, [resolvedTheme]);
+
   return (
     <motion.div
       className="thumb"
@@ -114,7 +120,7 @@ const ProjectImage = ({ thumb, opacity }) => {
           style={{
             position: 'absolute',
             inset: 0,
-            opacity: resolvedTheme === 'light' ? 0.85 : 0.5,
+            opacity: overlayOpacity,
           }}
         >
           <motion.div

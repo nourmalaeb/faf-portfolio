@@ -1,4 +1,4 @@
-button {
+.ToggleGroup button {
   all: unset;
 }
 
@@ -11,7 +11,7 @@ button {
   box-shadow: 0 2px 10px var(--color-bg);
 }
 
-.ToggleGroupItem {
+button.ToggleGroupItem {
   background-color: color(
     from var(--color-bg) srgb calc(r - 0.075) calc(g - 0.075) calc(b - 0.075)
   );
@@ -26,28 +26,28 @@ button {
   margin-left: 1px;
   user-select: none;
 }
-.ToggleGroupItem:hover {
+button.ToggleGroupItem:hover {
   background-color: color(
     from var(--color-bg) srgb calc(r + 0.075) calc(g + 0.075) calc(b + 0.075)
   );
 }
-.ToggleGroupItem:first-child {
+button.ToggleGroupItem:first-child {
   margin-left: 0;
   border-top-left-radius: 8px;
   border-bottom-left-radius: 8px;
 }
-.ToggleGroupItem:last-child,
-.ToggleGroupItem:last-child:hover {
+button.ToggleGroupItem:last-child,
+button.ToggleGroupItem:last-child:hover {
   border-top-right-radius: 8px;
   border-bottom-right-radius: 8px;
 }
-.ToggleGroupItem[aria-checked='true'] {
+button.ToggleGroupItem[aria-checked='true'] {
   background-color: color(
     from var(--color-bg) srgb calc(r + 0.075) calc(g + 0.075) calc(b + 0.075)
   );
   color: var(--color-emph);
 }
-.ToggleGroupItem:focus {
+button.ToggleGroupItem:focus {
   position: relative;
   box-shadow: 0 0 0 2px black;
 }
