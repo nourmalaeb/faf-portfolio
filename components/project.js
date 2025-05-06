@@ -14,6 +14,7 @@ import {
 } from 'motion/react';
 import { useRef } from 'react';
 import AudioPlayer from './tracks';
+import { useTheme } from 'next-themes';
 
 const Project = ({ project }) => {
   const { title, subtitle, thumbnail, description, tracks, details, tags } =
@@ -27,9 +28,9 @@ const Project = ({ project }) => {
     <div className="project-container" ref={ref} id={project.slug.current}>
       <div
         className="thumb mobile-thumb"
-        // style={{
-        //   marginBottom: `-${100 * thumbnail.asset.metadata.dimensions.aspectRatio}vw`,
-        // }}
+        style={{
+          marginBottom: `-${100 * thumbnail.asset.metadata.dimensions.aspectRatio}vw`,
+        }}
       >
         <ProjectImage thumb={thumbnail} opacity={scrollYProgress} />
       </div>
@@ -80,6 +81,8 @@ const ProjectImage = ({ thumb, opacity }) => {
   const backgroundSize = useTransform(opacity, [0, 1], ['100%', '150%']);
   const backgroundUrl = urlFor(thumb).width(1000).url();
   const aspectRatio = thumb.asset.metadata.dimensions.aspectRatio;
+
+  const { resolvedTheme } = useTheme();
   return (
     <motion.div
       className="thumb"
@@ -110,13 +113,13 @@ const ProjectImage = ({ thumb, opacity }) => {
           style={{
             position: 'absolute',
             inset: 0,
-            opacity: 0.5,
+            opacity: resolvedTheme === 'light' ? 0.75 : 0.5,
           }}
         >
           <motion.div
             style={{
               opacity: opacity,
-              background: 'black',
+              background: 'var(--color-bg)',
               position: 'absolute',
               inset: 0,
             }}
