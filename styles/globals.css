@@ -1,4 +1,5 @@
 :root {
-  --color-bg: #222;
-  --color-fg: #f1eeea;
+  --color-bg: #1f1d1d;
+  --color-fg: #bebcb2;
+  --color-emph: #f5f1ed;
 }

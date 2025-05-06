@@ -10,7 +10,7 @@
   &:hover {
     opacity: 1 !important;
     background-color: color(
-      from var(--color-bg) srgb calc(r + 0.1) calc(g + 0.1) calc(b + 0.1)
+      from var(--color-bg) srgb calc(r + 0.075) calc(g + 0.075) calc(b + 0.075)
     );
   }
 
@@ -25,6 +25,16 @@
       opacity: 0.4;
     }
   }
+}
+
+.tracks-title {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.875em;
+  margin-bottom: 1em;
 }
 
 .track-title {
@@ -65,7 +75,8 @@
   cursor: pointer !important;
   &:hover {
     background-color: color(
-      from var(--color-bg) srgb calc(r + 0.1) calc(g + 0.1) calc(b + 0.1) / 0.8
+      from var(--color-bg) srgb calc(r + 0.075) calc(g + 0.075)
+        calc(b + 0.075) / 0.8
     );
     opacity: 1;
   }

@@ -28,12 +28,32 @@
   width: 2px;
   height: 0.7em;
   background-color: var(--color-fg);
+  transform-origin: center;
+  z-index: 2;
   transition:
     height 0.2s ease,
+    width 0.2s ease,
     left 0.1s ease;
 }
 
 .audio-progress-bar:hover .audio-progress-seeker,
 .audio-progress-bar.is-playing .audio-progress-seeker {
   height: 3em;
+  width: 1px;
+}
+
+.audio-progress-hover-bar {
+  background-color: #ff8888;
+  width: 1px;
+  height: 3em;
+  position: absolute;
+  transform-origin: center;
+  opacity: 0;
+  z-index: 1;
+}
+
+@media (min-width: 720px) {
+  .audio-progress-bar:hover .audio-progress-hover-bar {
+    opacity: 0.5;
+  }
 }

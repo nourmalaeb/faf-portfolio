@@ -3,48 +3,31 @@
 import Project from '../components/project';
 import { motion } from 'motion/react';
 import './homepage.css';
+import Header from '../components/header';
+import { PortableTextRenderer } from '../components/portableTextRenderer';
 
 const HomePage = ({ data }) => {
   // console.log(projects);
-  const { projects } = data[0];
+  const { projects, about } = data;
   return (
-    <div>
-      <main style={{ position: 'relative' }}>
-        <header>
-          <motion.h1
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 2, ease: [0.17, 0.84, 0.44, 1] }}
-          >
-            Firas Abou Fakher
-          </motion.h1>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 6, ease: [0.17, 0.84, 0.44, 1] }}
-            className="tags"
-          >
-            <h2>Composer</h2>
-            <div className="dot" />
-            <h2>Producer</h2>
-            <div className="dot" />
-            <h2>Director</h2>
-          </motion.div>
-          {/* <H2 style={{ margin: `1rem 0 0 0` }}>About</H2> */}
-        </header>
+    <main style={{ position: 'relative' }} className="main-container">
+      <Header projects={projects} />
 
-        <motion.div
-          className="projects"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 2, ease: [0.17, 0.84, 0.44, 1] }}
-        >
-          {projects.map((item, idx) => (
-            <Project project={item} key={`project-${idx}`} />
-          ))}
-        </motion.div>
-      </main>
-    </div>
+      <motion.div
+        className="projects"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 2, ease: [0.17, 0.84, 0.44, 1] }}
+      >
+        {projects.map((item, idx) => (
+          <Project project={item} key={`project-${idx}`} />
+        ))}
+        <section id="about">
+          <h2>{about.title}</h2>
+          <PortableTextRenderer value={about.content} />
+        </section>
+      </motion.div>
+    </main>
   );
 };
 

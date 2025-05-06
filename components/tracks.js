@@ -217,6 +217,7 @@ export default function AudioPlayer({ tracks }) {
 
   return (
     <div className={`tracklist${isPlaying ? ' is-playing' : ''}`}>
+      <h4 className="tracks-title">Tracks</h4>
       {tracks.length > 0 &&
         tracks.map((track, idx) => {
           const isCurrent = idx === currentIndex;

@@ -21,3 +21,6 @@ export const homepageQuery = groq`
     }
   }
 `;
+
+export const aboutPageQuery = groq`
+  *[_type == "aboutPage"]`;

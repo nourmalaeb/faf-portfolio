@@ -1,6 +1,6 @@
 .root {
   font-family: var(--font-body), sans-serif;
-  font-size: max(18px, 1.75vw);
+  font-size: 18px;
   font-weight: 400;
   /* font-variation-settings: "wght" 250,"ital" 0,"SRFF" 50; */
   letter-spacing: -0.0125em;

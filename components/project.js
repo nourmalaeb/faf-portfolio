@@ -9,12 +9,10 @@ import { Blurhash } from 'react-blurhash';
 import {
   motion,
   useMotionTemplate,
-  useMotionValueEvent,
   useScroll,
   useTransform,
 } from 'motion/react';
-import { useRef, useState } from 'react';
-import { cubicBezier } from 'motion';
+import { useRef } from 'react';
 import AudioPlayer from './tracks';
 
 const Project = ({ project }) => {
@@ -26,12 +24,12 @@ const Project = ({ project }) => {
     offset: ['0vh', '50vh'],
   });
   return (
-    <div className="project-container" ref={ref}>
+    <div className="project-container" ref={ref} id={project.slug.current}>
       <div
         className="thumb mobile-thumb"
-        style={{
-          marginBottom: `-${100 * thumbnail.asset.metadata.dimensions.aspectRatio}vw`,
-        }}
+        // style={{
+        //   marginBottom: `-${100 * thumbnail.asset.metadata.dimensions.aspectRatio}vw`,
+        // }}
       >
         <ProjectImage thumb={thumbnail} opacity={scrollYProgress} />
       </div>
@@ -89,7 +87,7 @@ const ProjectImage = ({ thumb, opacity }) => {
       className="thumb"
       style={{
         // boxShadow: `0 0 30px -5px ${thumbnail.asset.metadata.palette.darkVibrant.background}`,
-        filter,
+        // filter,
         backgroundImage: `url(${backgroundUrl})`,
         backgroundSize,
         backgroundPosition: 'top center',
