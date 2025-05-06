@@ -15,6 +15,7 @@ import { media } from 'sanity-plugin-media';
 import { apiVersion, dataset, projectId } from './sanity/env';
 import { schema } from './sanity/schemaTypes';
 import { structure } from './sanity/structure';
+import { slugOnSave } from './sanity/lib/actions';
 
 export default defineConfig({
   basePath: '/admin',
@@ -22,6 +23,14 @@ export default defineConfig({
   dataset,
   // Add and edit the content schema in the './sanity/schemaTypes' folder
   schema,
+  document: {
+    actions: prev =>
+      prev.map(originalAction =>
+        originalAction.action === 'publish'
+          ? slugOnSave(originalAction)
+          : originalAction
+      ),
+  },
   plugins: [
     structureTool({ structure }),
     // Vision is for querying with GROQ from inside the Studio

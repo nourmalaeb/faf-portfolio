@@ -25,6 +25,7 @@
     "react-dom": "19.1.0",
     "sanity": "^3.87.1",
     "sanity-plugin-media": "^3.0.2",
+    "speakingurl": "^14.0.1",
     "use-sound": "^5.0.0",
     "zustand": "^5.0.4"
   },
