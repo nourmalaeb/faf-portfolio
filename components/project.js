@@ -114,7 +114,7 @@ const ProjectImage = ({ thumb, opacity }) => {
           style={{
             position: 'absolute',
             inset: 0,
-            opacity: resolvedTheme === 'light' ? 0.75 : 0.5,
+            opacity: resolvedTheme === 'light' ? 0.85 : 0.5,
           }}
         >
           <motion.div
