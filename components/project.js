@@ -86,10 +86,15 @@ const ProjectImage = ({ thumb, opacity }) => {
     setOverlayOpacity(resolvedTheme === 'light' ? 0.85 : 0.5);
   }, [resolvedTheme]);
 
-  const rampedOpacity = useTransform(opacity, [0, 1], [0, overlayOpacity], {
+  const rampedOpacity = useTransform(opacity, [0, 1], [0, 1], {
     ease: cubicBezier(0.075, 0.82, 0.165, 1),
   });
-  const backgroundColor = useMotionTemplate`color(from var(--color-bg) srgb r g b / ${rampedOpacity})`;
+  const rampedOverlayOpacity = useTransform(
+    rampedOpacity,
+    [0, 1],
+    [0, overlayOpacity]
+  );
+  const backgroundColor = useMotionTemplate`color(from var(--color-bg) srgb r g b / ${rampedOverlayOpacity})`;
   const backdropFilter = useMotionTemplate`blur(${blur})`;
 
   return (
@@ -114,6 +119,10 @@ const ProjectImage = ({ thumb, opacity }) => {
           }}
           transition={{ duration: 0.5, ease: [0.17, 0.84, 0.44, 1] }}
         ></motion.div>
+        <motion.div
+          className="bottom-fade"
+          style={{ opacity: rampedOpacity }}
+        />
       </div>
     </motion.div>
   );

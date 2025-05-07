@@ -66,8 +66,18 @@
   }
 
   & .thumb-overlay {
+    /* position: relative; */
     @media (min-width: 768px) {
       display: none;
+    }
+
+    .bottom-fade {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        color(from var(--color-bg) srgb r g b / 0),
+        var(--color-bg)
+      );
     }
   }
 }
