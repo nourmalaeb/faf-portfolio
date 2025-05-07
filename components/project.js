@@ -76,6 +76,7 @@ export default Project;
 
 const ProjectImage = ({ thumb, opacity }) => {
   const blur = useTransform(opacity, [0, 1], ['0px', '50px']);
+  const backgroundOffset = useTransform(opacity, [0, 1], ['0vh', '-40vh']);
   const backgroundSize = useTransform(opacity, [0, 1], ['100%', '150%']);
   const backgroundUrl = urlFor(thumb).width(1000).url();
   const aspectRatio = thumb.asset.metadata.dimensions.aspectRatio;
@@ -83,7 +84,7 @@ const ProjectImage = ({ thumb, opacity }) => {
   const [overlayOpacity, setOverlayOpacity] = useState(0.85);
   const { resolvedTheme } = useTheme();
   useEffect(() => {
-    setOverlayOpacity(resolvedTheme === 'light' ? 0.85 : 0.5);
+    setOverlayOpacity(resolvedTheme === 'light' ? 0.75 : 0.5);
   }, [resolvedTheme]);
 
   const rampedOpacity = useTransform(opacity, [0, 1], [0, 1], {
@@ -96,6 +97,7 @@ const ProjectImage = ({ thumb, opacity }) => {
   );
   const backgroundColor = useMotionTemplate`color(from var(--color-bg) srgb r g b / ${rampedOverlayOpacity})`;
   const backdropFilter = useMotionTemplate`blur(${blur})`;
+  const backgroundPosition = useMotionTemplate`center ${backgroundOffset}`;
 
   return (
     <motion.div
@@ -104,7 +106,7 @@ const ProjectImage = ({ thumb, opacity }) => {
         minHeight: '100vh',
         backgroundImage: `url(${backgroundUrl})`,
         backgroundSize,
-        backgroundPosition: 'top center',
+        backgroundPosition,
         backgroundRepeat: 'no-repeat',
         aspectRatio,
       }}
