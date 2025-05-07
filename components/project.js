@@ -5,7 +5,6 @@ import { PortableText } from '@portabletext/react';
 import './project.css';
 import { urlFor } from '../sanity/lib/image';
 import Details from './details';
-import { Blurhash } from 'react-blurhash';
 import {
   cubicBezier,
   motion,
@@ -76,29 +75,27 @@ const Project = ({ project }) => {
 export default Project;
 
 const ProjectImage = ({ thumb, opacity }) => {
-  // // parallax
-  const blur = useTransform(opacity, [0, 1], ['0px', '30px']);
-  const filter = useMotionTemplate`blur(${blur})`;
+  const blur = useTransform(opacity, [0, 1], ['0px', '50px']);
   const backgroundSize = useTransform(opacity, [0, 1], ['100%', '150%']);
   const backgroundUrl = urlFor(thumb).width(1000).url();
   const aspectRatio = thumb.asset.metadata.dimensions.aspectRatio;
-  const rampedOpacity = useTransform(opacity, [0, 1], [0, 1], {
-    ease: cubicBezier(0.075, 0.82, 0.165, 1),
-  });
 
-  const { resolvedTheme } = useTheme();
   const [overlayOpacity, setOverlayOpacity] = useState(0.85);
-
+  const { resolvedTheme } = useTheme();
   useEffect(() => {
     setOverlayOpacity(resolvedTheme === 'light' ? 0.85 : 0.5);
   }, [resolvedTheme]);
+
+  const rampedOpacity = useTransform(opacity, [0, 1], [0, overlayOpacity], {
+    ease: cubicBezier(0.075, 0.82, 0.165, 1),
+  });
+  const backgroundColor = useMotionTemplate`color(from var(--color-bg) srgb r g b / ${rampedOpacity})`;
+  const backdropFilter = useMotionTemplate`blur(${blur})`;
 
   return (
     <motion.div
       className="thumb"
       style={{
-        // boxShadow: `0 0 30px -5px ${thumbnail.asset.metadata.palette.darkVibrant.background}`,
-        filter,
         minHeight: '100vh',
         backgroundImage: `url(${backgroundUrl})`,
         backgroundSize,
@@ -107,36 +104,16 @@ const ProjectImage = ({ thumb, opacity }) => {
         aspectRatio,
       }}
     >
-      {/* <Image src={urlFor(thumb).width(1000).url()} alt={''} fill /> */}
       <div className="thumb-overlay">
         <motion.div
-          className="blurhash"
-          style={{ opacity }}
-          transition={{ duration: 0.5, ease: [0.17, 0.84, 0.44, 1] }}
-        >
-          <Blurhash
-            hash={thumb.asset.metadata.blurHash}
-            width={`calc(100%)`}
-            height={`calc(100%)`}
-          />
-        </motion.div>
-        <div
           style={{
+            backgroundColor,
             position: 'absolute',
             inset: 0,
-            opacity: overlayOpacity,
+            backdropFilter,
           }}
-        >
-          <motion.div
-            style={{
-              opacity: rampedOpacity,
-              background: 'var(--color-bg)',
-              position: 'absolute',
-              inset: 0,
-            }}
-            transition={{ duration: 0.5, ease: [0.17, 0.84, 0.44, 1] }}
-          ></motion.div>
-        </div>
+          transition={{ duration: 0.5, ease: [0.17, 0.84, 0.44, 1] }}
+        ></motion.div>
       </div>
     </motion.div>
   );
