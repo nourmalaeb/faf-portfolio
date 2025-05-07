@@ -23,7 +23,7 @@
 .title {
   /* text-transform: uppercase; */
   font-family: var(--font-header);
-  font-size: clamp(1.5em, calc(1.5em + 3vw), 2.5em);
+  font-size: clamp(1.5em, calc(1.5em + 3vw), 5em);
   /* text-align: center; */
   font-weight: 400;
   position: relative;
@@ -31,7 +31,7 @@
 }
 
 .subtitle {
-  font-size: clamp(0.8em, calc(0em + 2vw), 1.5em);
+  font-size: clamp(1em, calc(0em + 2vw), 1.5em);
   font-weight: 400;
   /* text-align: center; */
 }
@@ -46,8 +46,11 @@
   overflow: visible;
 
   @media (min-width: 768px) {
+    position: relative;
+    min-width: 100px;
     max-width: 25vw;
-    height: 100vh;
+    /* height: 100vh; */
+    margin-bottom: 2rem;
   }
   & img {
     object-fit: contain;

@@ -22,7 +22,6 @@ header {
   }
 
   a {
-    display: block;
     transition:
       font-weight 0.2s ease,
       color 0.2s ease;
@@ -47,11 +46,9 @@ h1 {
   font-weight: 400;
   font-style: normal;
   margin: 0 0 0.5em 0;
-  font-size: 3em;
-  /* text-transform: uppercase; */
+  font-size: clamp(2em, calc(1.5em + 3vw), 6em);
   line-height: 0.95;
-  /* letter-spacing: -0.05em; */
-  /* text-align: center; */
+  cursor: pointer;
 }
 
 .tags {
@@ -89,7 +86,6 @@ h1 {
   padding: 0;
 
   li {
-    display: block;
     padding: 0;
   }
 }

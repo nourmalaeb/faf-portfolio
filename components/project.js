@@ -7,6 +7,7 @@ import { urlFor } from '../sanity/lib/image';
 import Details from './details';
 import { Blurhash } from 'react-blurhash';
 import {
+  cubicBezier,
   motion,
   useMotionTemplate,
   useScroll,
@@ -36,7 +37,7 @@ const Project = ({ project }) => {
       </div>
       <div
         className="thumb big-thumb"
-        // style={{ aspectRatio: thumbnail.asset.metadata.dimensions.aspectRatio }}
+        style={{ aspectRatio: thumbnail.asset.metadata.dimensions.aspectRatio }}
       >
         <Image
           src={urlFor(thumbnail).width(1000).url()}
@@ -81,6 +82,9 @@ const ProjectImage = ({ thumb, opacity }) => {
   const backgroundSize = useTransform(opacity, [0, 1], ['100%', '150%']);
   const backgroundUrl = urlFor(thumb).width(1000).url();
   const aspectRatio = thumb.asset.metadata.dimensions.aspectRatio;
+  const rampedOpacity = useTransform(opacity, [0, 1], [0, 1], {
+    ease: cubicBezier(0.075, 0.82, 0.165, 1),
+  });
 
   const { resolvedTheme } = useTheme();
   const [overlayOpacity, setOverlayOpacity] = useState(0.85);
@@ -94,8 +98,8 @@ const ProjectImage = ({ thumb, opacity }) => {
       className="thumb"
       style={{
         // boxShadow: `0 0 30px -5px ${thumbnail.asset.metadata.palette.darkVibrant.background}`,
-        // filter,
-        height: '100vh',
+        filter,
+        minHeight: '100vh',
         backgroundImage: `url(${backgroundUrl})`,
         backgroundSize,
         backgroundPosition: 'top center',
@@ -125,7 +129,7 @@ const ProjectImage = ({ thumb, opacity }) => {
         >
           <motion.div
             style={{
-              opacity: opacity,
+              opacity: rampedOpacity,
               background: 'var(--color-bg)',
               position: 'absolute',
               inset: 0,

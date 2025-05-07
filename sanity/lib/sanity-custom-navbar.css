@@ -1,0 +1,30 @@
+body {
+  padding: 0;
+  margin: 0;
+}
+
+button.send-it-button {
+  padding: 6px 10px;
+  font-size: 14px;
+  font-weight: 600;
+  gap: 0.5em;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  border: 1px solid #555;
+  background-color: #333;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  align-items: center;
+
+  &:hover {
+    background-color: blue;
+    border: 1px solid
+      color(from blue srgb calc(r + 0.2) calc(g + 0.2) calc(b + 0.2));
+  }
+
+  &:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+  }
+}

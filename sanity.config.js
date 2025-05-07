@@ -16,6 +16,7 @@ import { apiVersion, dataset, projectId } from './sanity/env';
 import { schema } from './sanity/schemaTypes';
 import { structure } from './sanity/structure';
 import { slugOnSave } from './sanity/lib/actions';
+import { CustomNavbar } from './sanity/lib/navBar';
 
 export default defineConfig({
   basePath: '/admin',
@@ -30,6 +31,11 @@ export default defineConfig({
           ? slugOnSave(originalAction)
           : originalAction
       ),
+  },
+  studio: {
+    components: {
+      navbar: CustomNavbar,
+    },
   },
   plugins: [
     structureTool({ structure }),

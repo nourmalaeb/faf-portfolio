@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import './header.css';
@@ -59,6 +61,14 @@ const Header = ({ projects }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 2, ease: [0.17, 0.84, 0.44, 1] }}
+        onClick={() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          window.history.pushState(
+            '',
+            document.title,
+            window.location.pathname + window.location.search
+          );
+        }}
       >
         Firas Abou Fakher
       </motion.h1>

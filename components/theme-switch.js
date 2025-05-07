@@ -50,7 +50,7 @@ const ThemeSwitch = () => {
         </Tooltip>
         <Tooltip content={'Dark'}>
           <ToggleGroup.Item
-            className="ToggleGroupItem"
+            className="ToggleGroupItem last"
             value="dark"
             aria-label="Dark"
           >
