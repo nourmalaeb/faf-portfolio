@@ -3,7 +3,6 @@
   font-size: 18px;
   font-weight: 400;
   /* font-variation-settings: "wght" 250,"ital" 0,"SRFF" 50; */
-  letter-spacing: -0.0125em;
   overflow-x: hidden;
   background-color: var(--color-bg);
   color: var(--color-fg);
