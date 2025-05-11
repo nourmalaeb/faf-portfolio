@@ -50,14 +50,16 @@ const Project = ({ project }) => {
         {subtitle && <h3 className="subtitle">{subtitle}</h3>}
         {tags && (
           <div className="project-tags">
-            {tags.map((tag, idx) => (
-              <span
-                className="tag font-mono"
-                key={`tag-${project.__id}-${idx}`}
-              >
-                {tag}
-              </span>
-            ))}
+            {tags.map((tag, idx) =>
+              tag ? (
+                <span
+                  className="tag font-mono"
+                  key={`tag-${project.__id}-${idx}`}
+                >
+                  {tag}
+                </span>
+              ) : null
+            )}
           </div>
         )}
         <div>
@@ -84,7 +86,7 @@ const ProjectImage = ({ thumb, opacity }) => {
   const [overlayOpacity, setOverlayOpacity] = useState(0.85);
   const { resolvedTheme } = useTheme();
   useEffect(() => {
-    setOverlayOpacity(resolvedTheme === 'light' ? 0.75 : 0.5);
+    setOverlayOpacity(resolvedTheme === 'light' ? 0.85 : 0.5);
   }, [resolvedTheme]);
 
   const rampedOpacity = useTransform(opacity, [0, 1], [0, 1], {

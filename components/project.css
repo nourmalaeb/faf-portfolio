@@ -74,9 +74,10 @@
     .bottom-fade {
       position: absolute;
       inset: 0;
+      z-index: 100;
       background: linear-gradient(
-        color(from var(--color-bg) srgb r g b / 0),
-        var(--color-bg)
+        color(from var(--color-bg) srgb r g b / 0) 0%,
+        var(--color-bg) 50%
       );
     }
   }
@@ -108,18 +109,20 @@
 
 .tag {
   text-transform: uppercase;
-  font-size: 0.8em;
+  font-size: 0.75em;
   letter-spacing: 0.05em;
-  font-weight: 500;
-  padding: 0.25em 0.75em;
-  border: 1px solid var(--color-fg);
+  font-weight: 550;
+  padding: 0.25em 1em;
+  line-height: 1;
+  border: 1px solid color(from var(--color-fg) srgb r g b / 0.5);
   border-radius: 100em;
-  margin-right: 0.25em;
 }
 
 .project-tags {
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin: 1em 0;
+  margin: 0.5em 0 1em 0;
+  flex-wrap: wrap;
+  gap: 0.25em 0.2em;
 }

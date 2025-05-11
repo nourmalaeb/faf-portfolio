@@ -12,6 +12,7 @@ main.main-container {
   position: relative;
   background-color: var(--color-bg);
   z-index: 10;
+  padding: 2rem 0;
 }
 
 section#about {
