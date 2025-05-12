@@ -12,7 +12,9 @@ main.main-container {
   position: relative;
   background-color: var(--color-bg);
   z-index: 10;
-  padding: 2rem 0;
+  @media (min-width: 768px) {
+    padding: 2rem 0;
+  }
 }
 
 section#about {

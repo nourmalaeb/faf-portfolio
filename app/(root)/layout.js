@@ -2,9 +2,8 @@ import '../../styles/reset.css';
 import '../../styles/globals.css';
 import styles from './app.module.css';
 import { body, mono, header } from '../../components/utils/fonts';
-import { ReactLenis } from '../../components/utils/lenis';
 import 'lenis/dist/lenis.css';
-import { ThemeProvider } from 'next-themes';
+import { Providers } from './providers'; // Import the new Providers component
 
 export const metadata = {
   title: 'Firas Abou Fakher • Composer • Producer • Director',
@@ -19,11 +18,10 @@ export default function RootLayout({ children }) {
       style={{ scrollBehavior: 'smooth' }}
       suppressHydrationWarning
     >
-      <ReactLenis root>
-        <ThemeProvider>
-          <body className={styles.root}>{children}</body>
-        </ThemeProvider>
-      </ReactLenis>
+      {/* Next.js automatically handles the <head> tag */}
+      <body className={styles.root}>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }
