@@ -41,3 +41,38 @@ section#about {
     margin-bottom: 0.5em;
   }
 }
+
+.contact-link {
+  font-family: var(--font-header);
+  font-size: 2em;
+  padding: 1rem;
+  margin-bottom: 2em;
+  transition:
+    scale 0.3s ease,
+    color 0.3s ease;
+
+  &::before {
+    content: '→';
+    display: inline-block;
+    margin-right: 0.5em;
+    transform: rotate(-45deg);
+    scale: 1.5;
+    position: relative;
+    top: -0.1em;
+    transition:
+      transform 0.3s ease,
+      color 0.3s ease;
+  }
+
+  &:hover {
+    color: var(--color-emph);
+
+    &::before {
+      transform: rotate(-45deg) translateX(0.1em) scale(1.5);
+    }
+  }
+
+  @media (min-width: 768px) {
+    padding: 0;
+  }
+}

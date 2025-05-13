@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import './header.css';
 import ThemeSwitch from './theme-switch';
+import ObfuscatedEmailLink from './obfuscated-email';
 
 const Header = ({ projects }) => {
   const [activeSlug, setActiveSlug] = useState(null);
@@ -86,6 +87,9 @@ const Header = ({ projects }) => {
         <a href="#about" className={activeSlug === 'about' ? 'active' : ''}>
           About
         </a>
+        <ObfuscatedEmailLink emailUser={'nourmalaeb'} emailDomain={'gmail.com'}>
+          Contact
+        </ObfuscatedEmailLink>
       </motion.div>
 
       <motion.div

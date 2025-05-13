@@ -5,6 +5,7 @@ import { motion } from 'motion/react';
 import './homepage.css';
 import Header from '../../components/header';
 import { PortableTextRenderer } from '../../components/portableTextRenderer';
+import ObfuscatedEmailLink from '../../components/obfuscated-email';
 
 const HomePage = ({ data }) => {
   // console.log(projects);
@@ -26,6 +27,13 @@ const HomePage = ({ data }) => {
           <h2>{about.title}</h2>
           <PortableTextRenderer value={about.content} />
         </section>
+        <ObfuscatedEmailLink
+          emailUser={'nourmalaeb'}
+          emailDomain={'gmail.com'}
+          className={'contact-link'}
+        >
+          Contact
+        </ObfuscatedEmailLink>
       </motion.div>
     </main>
   );
