@@ -5,8 +5,9 @@ import { motion } from 'motion/react';
 import './header.css';
 import ThemeSwitch from './theme-switch';
 import ObfuscatedEmailLink from './obfuscated-email';
+import { PortableTextRenderer } from './portableTextRenderer';
 
-const Header = ({ projects }) => {
+const Header = ({ projects, tagline }) => {
   const [activeSlug, setActiveSlug] = useState(null);
   const observerRef = useRef(null);
 
@@ -73,16 +74,24 @@ const Header = ({ projects }) => {
       >
         Firas Abou Fakher
       </motion.h1>
+      <motion.h2
+        className="tagline"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 2, ease: [0.17, 0.84, 0.44, 1] }}
+      >
+        <PortableTextRenderer value={tagline} />
+      </motion.h2>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 2, ease: [0.17, 0.84, 0.44, 1] }}
       >
-        <h2>Works</h2>
+        <h3>Works</h3>
         <ul className="nav">
           <NavItems projects={projects} activeSlug={activeSlug} />
         </ul>
-        <h2>Info</h2>
+        <h3>Info</h3>
         {/* Apply active class directly to the About link */}
         <a href="#about" className={activeSlug === 'about' ? 'active' : ''}>
           About

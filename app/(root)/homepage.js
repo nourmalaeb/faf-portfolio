@@ -9,10 +9,10 @@ import ObfuscatedEmailLink from '../../components/obfuscated-email';
 
 const HomePage = ({ data }) => {
   // console.log(projects);
-  const { projects, about } = data;
+  const { projects, about, tagline } = data;
   return (
     <main style={{ position: 'relative' }} className="main-container">
-      <Header projects={projects} />
+      <Header projects={projects} tagline={tagline} />
 
       <motion.div
         className="projects"

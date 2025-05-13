@@ -14,6 +14,12 @@ export default {
       type: 'text',
     },
     {
+      name: 'tagline',
+      title: 'Tagline',
+      type: 'array',
+      of: [{ type: 'block' }],
+    },
+    {
       name: 'projects',
       title: 'Projects',
       type: 'array',

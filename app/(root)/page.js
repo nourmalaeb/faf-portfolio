@@ -14,7 +14,11 @@ export default async function Page() {
   const homePageData = await client.fetch(homepageQuery);
   const aboutPageData = await client.fetch(aboutPageQuery);
 
-  const data = { projects: homePageData[0].projects, about: aboutPageData[0] };
+  const data = {
+    projects: homePageData[0].projects,
+    about: aboutPageData[0],
+    tagline: homePageData[0].tagline,
+  };
 
   return <HomePage data={data} />;
 }
