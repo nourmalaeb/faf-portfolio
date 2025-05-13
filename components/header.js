@@ -96,7 +96,7 @@ const Header = ({ projects, tagline }) => {
         <a href="#about" className={activeSlug === 'about' ? 'active' : ''}>
           About
         </a>
-        <ObfuscatedEmailLink emailUser={'nourmalaeb'} emailDomain={'gmail.com'}>
+        <ObfuscatedEmailLink emailUser={'hello'} emailDomain={'firasfiras.com'}>
           Contact
         </ObfuscatedEmailLink>
       </motion.div>

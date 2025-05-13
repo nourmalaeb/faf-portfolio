@@ -28,8 +28,8 @@ const HomePage = ({ data }) => {
           <PortableTextRenderer value={about.content} />
         </section>
         <ObfuscatedEmailLink
-          emailUser={'nourmalaeb'}
-          emailDomain={'gmail.com'}
+          emailUser={'hello'}
+          emailDomain={'firasfiras.com'}
           className={'contact-link'}
         >
           Contact
