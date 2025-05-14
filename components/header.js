@@ -126,12 +126,21 @@ const Header = ({ projects, tagline }) => {
         </ul>
         <h3>Info</h3>
         {/* Apply active class directly to the About link */}
-        <a href="#about" className={activeSlug === 'about' ? 'active' : ''}>
-          About
-        </a>
-        <ObfuscatedEmailLink emailUser={'hello'} emailDomain={'firasfiras.com'}>
-          Contact
-        </ObfuscatedEmailLink>
+        <ul className="nav">
+          <li>
+            <a href="#about" className={activeSlug === 'about' ? 'active' : ''}>
+              About
+            </a>
+          </li>
+          <li>
+            <ObfuscatedEmailLink
+              emailUser={'hello'}
+              emailDomain={'firasfiras.com'}
+            >
+              Contact
+            </ObfuscatedEmailLink>
+          </li>
+        </ul>
       </motion.div>
 
       <motion.div

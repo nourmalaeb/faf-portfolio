@@ -17,10 +17,15 @@ export default function ObfuscatedEmailLink({
 
   const mailtoLink = `mailto:${actualEmail}${subject ? `?subject=${subject}` : ''}`;
 
-  if (!hydrated) return <span style={{ display: 'block' }}>{children}</span>;
+  if (!hydrated)
+    return <span style={{ display: 'inline-block' }}>{children}</span>;
 
   return (
-    <a href={mailtoLink} style={{ display: 'block' }} className={className}>
+    <a
+      href={mailtoLink}
+      style={{ display: 'inline-block' }}
+      className={className}
+    >
       {children}
     </a>
   );
