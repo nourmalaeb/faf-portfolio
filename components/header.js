@@ -67,7 +67,7 @@ const Header = ({ projects, tagline }) => {
   useEffect(() => {
     setFontSizeRange([
       (11 * width) / 100 + 'px',
-      Math.max((3 * width) / 100, 44) + 'px',
+      Math.max((2 * width) / 100, 44) + 'px',
     ]);
   }, [width]);
   const scrollInputRange = [1, 300]; // Increased scroll range for a smoother animation
