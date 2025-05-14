@@ -3,30 +3,37 @@
   place-items: center;
   position: relative;
   overflow: clip;
+  width: max-content;
 
   & .switch-indicator {
-    display: grid;
-    place-items: center;
-    pointer-events: none;
-    position: absolute;
-    inset: 0;
-    background-color: color(
-      from var(--color-bg) srgb calc(r + 0.125) calc(g + 0.125) calc(b + 0.125)
-    );
-    transition: opacity 0.2s ease;
+    display: none;
+    @media (min-width: 768px) {
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+      position: absolute;
+      inset: 0;
+      background-color: color(
+        from var(--color-bg) srgb calc(r + 0.125) calc(g + 0.125)
+          calc(b + 0.125)
+      );
+      transition: opacity 0.2s ease;
+    }
   }
 
-  & .ToggleGroup {
-    opacity: 0;
-  }
-
-  &:hover {
-    .switch-indicator {
+  @media (min-width: 768px) {
+    & .ToggleGroup {
       opacity: 0;
     }
 
-    .ToggleGroup {
-      opacity: 1;
+    &:hover {
+      .switch-indicator {
+        opacity: 0;
+      }
+
+      .ToggleGroup {
+        opacity: 1;
+      }
     }
   }
 }

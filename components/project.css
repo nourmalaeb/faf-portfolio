@@ -7,7 +7,7 @@
   margin: 0;
   /* max-width: 100%; */
   @media (min-width: 768px) {
-    grid-template-columns: min(400px, 25vw) 2fr;
+    grid-template-columns: min(400px, 20vw) 2fr;
     max-width: 1600px;
   }
 }

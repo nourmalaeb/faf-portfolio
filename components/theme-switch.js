@@ -7,10 +7,13 @@ import { Laptop, Moon, Sun } from 'lucide-react';
 import './theme-switch.css';
 import { Tooltip } from './tooltip';
 import { motion } from 'motion/react';
+import { useMedia } from 'react-use';
 
 const ThemeSwitch = () => {
   const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
+
+  const isWide = useMedia('(min-width: 768px)');
 
   // useEffect only runs on the client, so now we can safely show the UI
   useEffect(() => {
@@ -23,12 +26,18 @@ const ThemeSwitch = () => {
 
   return (
     <motion.div
-      initial={{ width: 24, height: 24, borderRadius: 100 }}
-      whileHover={{
-        width: 'auto',
-        height: 'auto',
-        borderRadius: 0,
-      }}
+      initial={
+        isWide ? { width: 24, height: 24, borderRadius: 100 } : undefined
+      }
+      whileHover={
+        isWide
+          ? {
+              width: 'auto',
+              height: 'auto',
+              borderRadius: 0,
+            }
+          : undefined
+      }
       className="switch-container"
     >
       <TooltipPrimitive.Provider delayDuration={0}>

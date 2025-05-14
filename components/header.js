@@ -1,11 +1,18 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { motion } from 'motion/react';
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useMotionValue,
+  cubicBezier,
+} from 'motion/react';
 import './header.css';
 import ThemeSwitch from './theme-switch';
 import ObfuscatedEmailLink from './obfuscated-email';
 import { PortableTextRenderer } from './portableTextRenderer';
+import { useWindowSize } from 'react-use';
 
 const Header = ({ projects, tagline }) => {
   const [activeSlug, setActiveSlug] = useState(null);
@@ -15,7 +22,6 @@ const Header = ({ projects, tagline }) => {
     if (observerRef.current) {
       observerRef.current.disconnect();
     }
-
     const observerCallback = entries => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -23,13 +29,11 @@ const Header = ({ projects, tagline }) => {
         }
       });
     };
-
     const observerOptions = {
       root: null,
       rootMargin: '-40% 0px -40% 0px',
       threshold: 0.1,
     };
-
     observerRef.current = new IntersectionObserver(
       observerCallback,
       observerOptions
@@ -43,7 +47,6 @@ const Header = ({ projects, tagline }) => {
         currentObserver.observe(element);
       }
     });
-
     // Observe About section
     const aboutElement = document.getElementById('about');
     if (aboutElement) {
@@ -57,12 +60,41 @@ const Header = ({ projects, tagline }) => {
     };
   }, [projects]);
 
+  const { scrollY } = useScroll();
+  const { width } = useWindowSize();
+  const [fontSizeRange, setFontSizeRange] = useState(['88px', '44px']);
+
+  useEffect(() => {
+    setFontSizeRange([
+      (11 * width) / 100 + 'px',
+      Math.max((3 * width) / 100, 44) + 'px',
+    ]);
+  }, [width]);
+  const scrollInputRange = [1, 300]; // Increased scroll range for a smoother animation
+  const fontSize = useTransform(scrollY, scrollInputRange, fontSizeRange, {
+    ease: cubicBezier(0.45, 0.05, 0.55, 0.95),
+  });
+
+  useEffect(() => {
+    const unsubscribe = fontSize.on('change', latest => {
+      console.log('fontSize motion value changed:', latest, scrollY.get());
+    });
+
+    // Log the initial value of fontSize
+    console.log('Initial fontSize motion value:', fontSize.get());
+
+    return () => {
+      unsubscribe();
+    };
+  }, [fontSize]); // Add dependencies
+
   return (
-    <header>
+    <header className="main-nav">
       <motion.h1
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 2, ease: [0.17, 0.84, 0.44, 1] }}
+        style={{ fontSize }}
         onClick={() => {
           window.scrollTo({ top: 0, behavior: 'smooth' });
           window.history.pushState(
@@ -79,6 +111,7 @@ const Header = ({ projects, tagline }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 2, ease: [0.17, 0.84, 0.44, 1] }}
+        layout
       >
         <PortableTextRenderer value={tagline} />
       </motion.h2>
