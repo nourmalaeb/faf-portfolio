@@ -1,13 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import {
-  motion,
-  useScroll,
-  useTransform,
-  useMotionValue,
-  cubicBezier,
-} from 'motion/react';
+import { motion, useScroll, useTransform, cubicBezier } from 'motion/react';
 import './header.css';
 import ThemeSwitch from './theme-switch';
 import ObfuscatedEmailLink from './obfuscated-email';
@@ -108,6 +102,7 @@ const Header = ({ projects, tagline }) => {
         layout
       >
         <PortableTextRenderer value={tagline} />
+        {/* {toPlainText(tagline)} */}
       </motion.h2>
       <motion.div
         initial={{ opacity: 0 }}

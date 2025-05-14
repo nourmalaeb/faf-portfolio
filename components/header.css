@@ -67,9 +67,10 @@ header {
 }
 
 .tagline {
-  font-weight: 450;
-  font-size: clamp(1.125em, calc(1em + 1vw), 1.375em);
+  /* font-weight: 550; */
+  font-size: clamp(1em, calc(1em + 1vw), 1.25em);
   letter-spacing: -0.01em;
+  line-height: 1.2;
   /* font-family: var(--font-mono); */
 }
 
