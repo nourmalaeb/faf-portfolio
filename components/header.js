@@ -62,50 +62,44 @@ const Header = ({ projects, tagline }) => {
 
   const { scrollY } = useScroll();
   const { width } = useWindowSize();
-  const [fontSizeRange, setFontSizeRange] = useState(['88px', '44px']);
+  const [fontSizeRange, setFontSizeRange] = useState(['44px', '44px']);
 
   useEffect(() => {
-    setFontSizeRange([
-      (11 * width) / 100 + 'px',
-      Math.max((2 * width) / 100, 44) + 'px',
-    ]);
+    if (width > 768) {
+      setFontSizeRange([
+        Math.max((11 * width) / 100, 44) + 'px',
+        Math.min((3 * width) / 100, 44) + 'px',
+      ]);
+    } else {
+      setFontSizeRange([Math.max((11 * width) / 100, 44) + 'px', '44px']);
+    }
   }, [width]);
+
   const scrollInputRange = [1, 300]; // Increased scroll range for a smoother animation
   const fontSize = useTransform(scrollY, scrollInputRange, fontSizeRange, {
     ease: cubicBezier(0.45, 0.05, 0.55, 0.95),
   });
 
-  useEffect(() => {
-    const unsubscribe = fontSize.on('change', latest => {
-      console.log('fontSize motion value changed:', latest, scrollY.get());
-    });
-
-    // Log the initial value of fontSize
-    console.log('Initial fontSize motion value:', fontSize.get());
-
-    return () => {
-      unsubscribe();
-    };
-  }, [fontSize]); // Add dependencies
-
   return (
     <header className="main-nav">
-      <motion.h1
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 2, ease: [0.17, 0.84, 0.44, 1] }}
-        style={{ fontSize }}
-        onClick={() => {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-          window.history.pushState(
-            '',
-            document.title,
-            window.location.pathname + window.location.search
-          );
-        }}
-      >
-        Firas Abou Fakher
-      </motion.h1>
+      <div className="h1-container">
+        <motion.h1
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 2, ease: [0.17, 0.84, 0.44, 1] }}
+          style={{ fontSize }}
+          onClick={() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.history.pushState(
+              '',
+              document.title,
+              window.location.pathname + window.location.search
+            );
+          }}
+        >
+          Firas Abou Fakher
+        </motion.h1>
+      </div>
       <motion.h2
         className="tagline"
         initial={{ opacity: 0 }}
