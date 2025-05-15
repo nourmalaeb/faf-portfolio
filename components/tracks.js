@@ -3,8 +3,11 @@ import { motion } from 'motion/react';
 import AudioProgressBar from './audio-progress-bar';
 import './tracks.css';
 import { Pause, Play } from 'lucide-react';
+import useAudioStore from '../stores/audio-store';
 
-export default function AudioPlayer({ tracks }) {
+export default function AudioPlayer({ tracks, projectId }) {
+  const { currentlyPlayingId, setCurrentlyPlayingId } = useAudioStore();
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.8);
@@ -41,13 +44,27 @@ export default function AudioPlayer({ tracks }) {
       // When selecting current track, toggle play/pause
       if (index === currentIndex) {
         setIsPlaying(prev => !prev);
+        const startPlaying = !isPlaying;
+        if (startPlaying) {
+          setCurrentlyPlayingId(projectId);
+        } else if (currentlyPlayingId === projectId) {
+          setCurrentlyPlayingId(null);
+        }
       } else {
         // when selecting new track, play new track
         setCurrentIndex(index);
         setIsPlaying(true);
+
+        setCurrentlyPlayingId(projectId);
       }
     },
-    [currentIndex]
+    [
+      currentIndex,
+      isPlaying,
+      projectId,
+      currentlyPlayingId,
+      setCurrentlyPlayingId,
+    ]
   );
 
   // Handle seeking
@@ -204,6 +221,23 @@ export default function AudioPlayer({ tracks }) {
       clearInterval(intervalRef.current);
     };
   }, [currentIndex, tracks, isPlaying, trackProgresses, handleNextTrack]);
+
+  useEffect(() => {
+    // If another player starts playing (currentlyPlayingId is set and is not our ID)
+    if (currentlyPlayingId !== null && currentlyPlayingId !== projectId) {
+      if (isPlaying) {
+        // If this player is currently playing, pause it
+        setIsPlaying(false);
+      }
+    }
+    // If currentlyPlayingId becomes null, all players should pause.
+    // This happens when the currently playing track ends or is explicitly paused.
+    if (currentlyPlayingId === null && isPlaying) {
+      // If this player was playing, pause it.
+      setIsPlaying(false);
+    }
+    // Dependencies include the Zustand state and this player's unique ID
+  }, [currentlyPlayingId, projectId, isPlaying]);
 
   // Update audio volume when volume state changes
   useEffect(() => {

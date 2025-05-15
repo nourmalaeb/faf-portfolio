@@ -68,7 +68,9 @@ const Project = ({ project }) => {
         </div>
         {details && details.length > 0 && <Details details={details} />}
         {/* {tracks && <Tracks tracklist={tracks} />} */}
-        {tracks && <AudioPlayer tracks={tracks} />}
+        {tracks && (
+          <AudioPlayer tracks={tracks} projectId={project.slug.current} />
+        )}
       </div>
     </div>
   );
