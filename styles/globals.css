@@ -2,10 +2,30 @@
   --color-emph: #100e0e;
   --color-bg: #d5d3cb;
   --color-fg: #413c3c;
+  --color-accent: #f98800;
 }
 
 [data-theme='dark'] {
   --color-bg: #1f1d1d;
   --color-fg: #bebcb2;
   --color-emph: #f5f1ed;
+  --color-accent: #f98800;
+}
+
+/* Global focus style */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Global selection styles */
+::selection {
+  background-color: var(--color-fg);
+  color: var(--color-bg);
+}
+
+/* For older Firefox compatibility */
+::-moz-selection {
+  background-color: var(--color-fg);
+  color: var(--color-bg);
 }

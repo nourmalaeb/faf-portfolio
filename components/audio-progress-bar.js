@@ -3,7 +3,7 @@ import './audio-progress-bar.css';
 import { Slider } from 'radix-ui';
 
 export default function AudioProgressBar(props) {
-  const { duration, progress, onSeek, isPlaying } = props;
+  const { duration, progress, onSeek, isPlaying, onTogglePlayPause } = props;
 
   const containerRef = useRef(null);
   const hoverBarRef = useRef(null);
@@ -40,6 +40,31 @@ export default function AudioProgressBar(props) {
     };
   }, []);
 
+  const handleKeyDown = e => {
+    if (e.key === ' ') {
+      onTogglePlayPause();
+      e.preventDefault();
+      return;
+    }
+
+    let newProgress = progress;
+    const seekAmount = e.shiftKey ? 10 : 1;
+
+    if (e.key === 'ArrowLeft') {
+      newProgress = Math.max(0, progress - seekAmount);
+      e.preventDefault();
+    } else if (e.key === 'ArrowRight') {
+      newProgress = Math.min(duration, progress + seekAmount);
+      e.preventDefault();
+    } else {
+      return;
+    }
+
+    if (newProgress !== progress) {
+      onSeek(newProgress);
+    }
+  };
+
   return (
     <Slider.Root
       className={`audio-progress-bar${isPlaying ? ' is-playing' : ''}`}
@@ -49,6 +74,7 @@ export default function AudioProgressBar(props) {
       step={0.01}
       onValueChange={values => onSeek(values[0])}
       ref={containerRef}
+      onKeyDown={handleKeyDown}
     >
       <Slider.Track className="audio-progress-track">
         <Slider.Range className="audio-progress-range" />

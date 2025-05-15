@@ -11,6 +11,7 @@ import { useMedia } from 'react-use';
 
 const ThemeSwitch = () => {
   const [mounted, setMounted] = useState(false);
+  const [switchStyles, setSwitchStyles] = useState(undefined);
   const { theme, setTheme } = useTheme();
 
   const isWide = useMedia('(min-width: 768px)');
@@ -19,6 +20,19 @@ const ThemeSwitch = () => {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (isWide) {
+      setSwitchStyles({
+        width: 'auto',
+        height: 'auto',
+        borderRadius: 0,
+      });
+    } else {
+      console.log('NOT WIDE');
+      setSwitchStyles(undefined);
+    }
+  }, [isWide]);
 
   if (!mounted) {
     return null;
@@ -29,16 +43,10 @@ const ThemeSwitch = () => {
       initial={
         isWide ? { width: 24, height: 24, borderRadius: 100 } : undefined
       }
-      whileHover={
-        isWide
-          ? {
-              width: 'auto',
-              height: 'auto',
-              borderRadius: 0,
-            }
-          : undefined
-      }
+      whileHover={switchStyles}
+      whileFocus={switchStyles}
       className="switch-container"
+      layout
     >
       <TooltipPrimitive.Provider delayDuration={0}>
         <ToggleGroup.Root

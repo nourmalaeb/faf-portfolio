@@ -74,7 +74,8 @@
     background-color 0.2s ease;
   color: var(--color-fg);
   cursor: pointer !important;
-  &:hover {
+  &:hover,
+  &:focus-visible {
     background-color: color(
       from var(--color-bg) srgb calc(r + 0.075) calc(g + 0.075)
         calc(b + 0.075) / 0.8

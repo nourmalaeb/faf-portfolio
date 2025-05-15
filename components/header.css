@@ -63,6 +63,8 @@ header {
     width: 100vw;
     text-wrap: no-wrap;
     transform-origin: top left;
+    text-box: trim-both cap alphabetic;
+    padding-top: 0.1em;
   }
 }
 

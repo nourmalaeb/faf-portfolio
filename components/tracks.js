@@ -305,12 +305,26 @@ const TrackItem = React.memo(
           onClick={handleClick}
           className="play-pause-mobile"
           type="button"
+          aria-label={
+            isPlaying && isCurrent
+              ? `Pause ${track.title}`
+              : `Play ${track.title}`
+          }
         >
           {isPlaying && isCurrent ? <Pause size={16} /> : <Play size={16} />}
         </button>
         <div className="track-title">
           <h5>{track.title}</h5>
-          <button onClick={handleClick} className="play-pause" type="button">
+          <button
+            onClick={handleClick}
+            className="play-pause"
+            type="button"
+            aria-label={
+              isPlaying && isCurrent
+                ? `Pause ${track.title}`
+                : `Play ${track.title}`
+            }
+          >
             {isPlaying && isCurrent ? 'PAUSE' : 'PLAY'}
           </button>
         </div>
@@ -323,6 +337,7 @@ const TrackItem = React.memo(
           progress={progress}
           onSeek={handleSeekRequest}
           name={track.key}
+          onTogglePlayPause={handleClick}
         />
       </motion.div>
     );
