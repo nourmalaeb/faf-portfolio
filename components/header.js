@@ -61,7 +61,7 @@ const Header = ({ projects, tagline }) => {
   useEffect(() => {
     if (width > 768) {
       setFontSizeRange([
-        Math.max((11 * width) / 100, 44) + 'px',
+        Math.min((8 * width) / 100, 144) + 'px',
         Math.min((3 * width) / 100, 44) + 'px',
       ]);
     } else {

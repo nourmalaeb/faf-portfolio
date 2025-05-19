@@ -29,7 +29,6 @@ const ThemeSwitch = () => {
         borderRadius: 0,
       });
     } else {
-      console.log('NOT WIDE');
       setSwitchStyles(undefined);
     }
   }, [isWide]);

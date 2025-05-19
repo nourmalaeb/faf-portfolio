@@ -39,7 +39,7 @@ section#about {
 
   h2 {
     font-family: var(--font-header);
-    font-size: 3em;
+    font-size: clamp(1.5em, calc(1.5em + 3vw), 5em);
     line-height: 0.95;
     margin-bottom: 0.5em;
   }

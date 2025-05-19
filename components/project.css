@@ -26,6 +26,7 @@
   font-family: var(--font-header);
   font-size: clamp(1.5em, calc(1.5em + 3vw), 5em);
   /* text-align: center; */
+  line-height: 1;
   font-weight: 400;
   position: relative;
   z-index: 10;
