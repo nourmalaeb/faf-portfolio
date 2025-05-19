@@ -85,10 +85,10 @@ const ProjectImage = ({ thumb, opacity }) => {
   const backgroundUrl = urlFor(thumb).width(1000).url();
   const aspectRatio = thumb.asset.metadata.dimensions.aspectRatio;
 
-  const [overlayOpacity, setOverlayOpacity] = useState(0.85);
+  const [overlayOpacity, setOverlayOpacity] = useState(0.65);
   const { resolvedTheme } = useTheme();
   useEffect(() => {
-    setOverlayOpacity(resolvedTheme === 'light' ? 0.85 : 0.5);
+    setOverlayOpacity(resolvedTheme === 'light' ? 0.65 : 0.5);
   }, [resolvedTheme]);
 
   const rampedOpacity = useTransform(opacity, [0, 1], [0, 1], {

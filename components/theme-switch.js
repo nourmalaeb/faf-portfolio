@@ -46,6 +46,7 @@ const ThemeSwitch = () => {
       whileFocus={switchStyles}
       className="switch-container"
       layout
+      key={isWide ? 'desktop' : 'mobile'}
     >
       <TooltipPrimitive.Provider delayDuration={0}>
         <ToggleGroup.Root
