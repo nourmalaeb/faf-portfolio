@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Geist, Geist_Mono, Instrument_Sans } from 'next/font/google';
 import localFont from 'next/font/local';
 
 export const mono = Geist_Mono({
@@ -8,7 +8,13 @@ export const mono = Geist_Mono({
   display: 'swap',
 });
 
-export const body = Geist({
+export const body_geist = Geist({
+  subsets: ['latin'],
+  variable: '--font-body',
+  display: 'swap',
+});
+
+export const body = Instrument_Sans({
   subsets: ['latin'],
   variable: '--font-body',
   display: 'swap',
