@@ -7,6 +7,7 @@ export default {
       name: 'title',
       title: 'Title',
       type: 'string',
+      validation: rule => rule.required(),
     },
     {
       name: 'slug',
@@ -26,6 +27,7 @@ export default {
       name: 'thumbnail',
       title: 'Thumbnail',
       type: 'image',
+      validation: rule => rule.required(),
     },
     {
       name: 'description',

@@ -8,8 +8,14 @@ export default {
       title: 'Audio file',
       type: 'file',
       options: { accept: 'audio/*' },
+      validation: rule => rule.required(),
     },
-    { name: 'title', title: 'Track title', type: 'string' },
+    {
+      name: 'title',
+      title: 'Track title',
+      type: 'string',
+      validation: rule => rule.required(),
+    },
     {
       name: 'duration',
       title: 'Duration (seconds)',
