@@ -255,6 +255,10 @@ export default function AudioPlayer({ tracks, projectId }) {
       <h4 className="tracks-title">Tracks</h4>
       {tracks.length > 0 &&
         tracks.map((track, idx) => {
+          if (!track.url) {
+            console.log(`Missing audio track for ${track.title}`);
+            return;
+          }
           const isCurrent = idx === currentIndex;
           const trackKey = track._key; // Stable key
           const duration = track.duration;
