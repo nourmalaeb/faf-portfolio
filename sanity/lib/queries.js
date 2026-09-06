@@ -1,8 +1,8 @@
-import { groq } from 'next-sanity';
+import { groq } from "next-sanity";
 
 export const allProjectsQuery = groq`*[_type == "project"] {
     ...,
-    tracks[] {..., "url": asset.asset->url },
+    tracks[] {..., "url": asset.asset->url, "duration": asset.asset->opt.faf.duration },
   }
   `;
 
@@ -17,7 +17,7 @@ export const homepageQuery = groq`
           metadata
         }
       },
-      tracks[] {..., "url": asset.asset->url },
+      tracks[] {..., "url": asset.asset->url, "duration": asset.asset->opt.faf.duration },
     }
   }
 `;
