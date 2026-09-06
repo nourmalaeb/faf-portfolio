@@ -33,3 +33,9 @@ yarn-error.log*
 
 # vercel
 .vercel
+.env*
+
+# Sanity Functions
+functions/**/.env*
+functions/**/.build/
+functions/**/node_modules/
