@@ -43,10 +43,7 @@ export default defineConfig({
     visionTool({ defaultApiVersion: apiVersion }),
     media(),
   ],
-  tools: (prev) => [
-    ...prev,
-    { name: "durations", title: "Durations", component: DurationSweepTool },
-  ],
+  tools: (prev) => [...prev, { name: "tracks", title: "Tracks", component: DurationSweepTool }],
   title: `Firas Abou Fakher CMS`,
   icon: OkHandIcon,
 });

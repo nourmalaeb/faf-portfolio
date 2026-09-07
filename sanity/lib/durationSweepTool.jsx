@@ -128,59 +128,75 @@ export function DurationSweepTool() {
         </Flex>
 
         <Flex gap={2}>
-          <Box flex={1}>
+          <Stack gap={2} style={{ width: "50%" }}>
+            <Text>
+              <label htmlFor="track-search">Search</label>
+            </Text>
             <TextInput
+              id="track-search"
+              type="search"
               placeholder="Filter by filename"
               value={filter}
               onChange={(e) => setFilter(e.currentTarget.value)}
             />
-          </Box>
-          <Select value={sort} onChange={(e) => setSort(e.currentTarget.value)}>
-            <option value="name">Filename</option>
-            <option value="duration">Longest first</option>
-            <option value="size">Largest first</option>
-            <option value="missing">Missing first</option>
-          </Select>
+          </Stack>
+          <Stack gap={2} style={{ width: "50%" }}>
+            <Text>
+              <label htmlFor="track-sort">Sort</label>
+            </Text>
+            <Select id="track-sort" value={sort} onChange={(e) => setSort(e.currentTarget.value)}>
+              <option value="name">Filename</option>
+              <option value="duration">Longest first</option>
+              <option value="size">Largest first</option>
+              <option value="missing">Missing first</option>
+            </Select>
+          </Stack>
         </Flex>
 
         <Stack gap={1}>
-          {visible.map((asset) => {
-            const state = pending[asset._id];
-            return (
-              <Card
-                key={asset._id}
-                padding={3}
-                radius={2}
-                tone={asset.duration == null ? "caution" : "transparent"}
-              >
-                <Flex align="center" gap={3}>
-                  <Box flex={1}>
-                    <Text size={1} textOverflow="ellipsis">
-                      {asset.originalFilename}
+          {visible.length > 0 ? (
+            visible.map((asset) => {
+              const state = pending[asset._id];
+              return (
+                <Card
+                  key={asset._id}
+                  padding={3}
+                  radius={2}
+                  tone={asset.duration == null ? "caution" : "transparent"}
+                >
+                  <Flex align="center" gap={3}>
+                    <Box flex={1}>
+                      <Text size={1} textOverflow="ellipsis">
+                        {asset.originalFilename}
+                      </Text>
+                    </Box>
+                    <Text size={1} muted style={{ minWidth: 70, textAlign: "right" }}>
+                      {formatBytes(asset.size)}
                     </Text>
-                  </Box>
-                  <Text size={1} muted style={{ minWidth: 70, textAlign: "right" }}>
-                    {formatBytes(asset.size)}
-                  </Text>
-                  <Text size={1} muted style={{ minWidth: 60, textAlign: "right" }}>
-                    {state === "working"
-                      ? "…"
-                      : state
-                        ? state
-                        : (formatDuration(asset.duration) ?? "—")}
-                  </Text>
-                  <Button
-                    mode="bleed"
-                    fontSize={1}
-                    padding={2}
-                    text="Recalc"
-                    disabled={busy || state === "working"}
-                    onClick={() => recalc(asset)}
-                  />
-                </Flex>
-              </Card>
-            );
-          })}
+                    <Text size={1} muted style={{ minWidth: 60, textAlign: "right" }}>
+                      {state === "working"
+                        ? "…"
+                        : state
+                          ? state
+                          : (formatDuration(asset.duration) ?? "—")}
+                    </Text>
+                    <Button
+                      mode="bleed"
+                      fontSize={1}
+                      padding={2}
+                      text="Recalc"
+                      disabled={busy || state === "working"}
+                      onClick={() => recalc(asset)}
+                    />
+                  </Flex>
+                </Card>
+              );
+            })
+          ) : (
+            <Card padding={4} border align="center" tone="primary">
+              <Text muted>No results</Text>
+            </Card>
+          )}
         </Stack>
       </Stack>
     </Container>
