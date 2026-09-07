@@ -1,19 +1,20 @@
-import { HomeIcon, UserIcon } from '@sanity/icons';
+import { HomeIcon } from "@sanity/icons/Home";
+import { UserIcon } from "@sanity/icons/User";
 
 // https://www.sanity.io/docs/structure-builder-cheat-sheet
-export const structure = S =>
+export const structure = (S) =>
   S.list()
-    .title('Content')
+    .title("Content")
     .items([
       S.listItem()
-        .title('Home Page')
+        .title("Home Page")
         .icon(HomeIcon)
-        .child(S.document().schemaType('homePage').documentId('homePage')),
+        .child(S.document().schemaType("homePage").documentId("homePage")),
       S.listItem()
-        .title('About Page')
+        .title("About Page")
         .icon(UserIcon)
-        .child(S.document().schemaType('aboutPage').documentId('aboutPage')),
+        .child(S.document().schemaType("aboutPage").documentId("aboutPage")),
       ...S.documentTypeListItems().filter(
-        listItem => !['homePage', 'aboutPage'].includes(listItem.getId())
+        (listItem) => !["homePage", "aboutPage"].includes(listItem.getId()),
       ),
     ]);

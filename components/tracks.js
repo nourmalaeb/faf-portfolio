@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { motion } from 'motion/react';
-import AudioProgressBar from './audio-progress-bar';
-import './tracks.css';
-import { Pause, Play } from 'lucide-react';
-import useAudioStore from '../stores/audio-store';
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { motion } from "motion/react";
+import AudioProgressBar from "./audio-progress-bar";
+import "./tracks.css";
+import { Pause, Play } from "lucide-react";
+import useAudioStore from "../stores/audio-store";
 
 export default function AudioPlayer({ tracks, projectId }) {
   const { currentlyPlayingId, setCurrentlyPlayingId } = useAudioStore();
@@ -12,27 +12,33 @@ export default function AudioPlayer({ tracks, projectId }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.8);
   const [trackProgresses, setTrackProgresses] = useState({});
+  const trackProgressesRef = useRef(trackProgresses);
+  trackProgressesRef.current = trackProgresses;
 
   const audioRef = useRef(null);
   const intervalRef = useRef(null);
   const isReadyRef = useRef(false);
+
+  // safe pause
+
+  const playPromiseRef = useRef(null);
 
   // initialize audio component on mount
   useEffect(() => {
     const audio = new Audio();
     audioRef.current = audio;
     // audio.volume = volume;
-    audio.preload = 'metadata';
+    audio.preload = "metadata";
 
     const handleSrcChange = () => (isReadyRef.current = false);
-    audio.addEventListener('emptied', handleSrcChange);
+    audio.addEventListener("emptied", handleSrcChange);
 
     return () => {
       clearInterval(intervalRef.current); // Clear interval on unmount
       if (audioRef.current) {
-        audioRef.current.removeEventListener('emptied', handleSrcChange);
+        audioRef.current.removeEventListener("emptied", handleSrcChange);
         audioRef.current.pause();
-        audioRef.current.src = '';
+        audioRef.current.src = "";
       }
       audioRef.current = null;
     };
@@ -40,10 +46,10 @@ export default function AudioPlayer({ tracks, projectId }) {
 
   // Handle track selection
   const handleTrackSelect = useCallback(
-    index => {
+    (index) => {
       // When selecting current track, toggle play/pause
       if (index === currentIndex) {
-        setIsPlaying(prev => !prev);
+        setIsPlaying((prev) => !prev);
         const startPlaying = !isPlaying;
         if (startPlaying) {
           setCurrentlyPlayingId(projectId);
@@ -58,24 +64,18 @@ export default function AudioPlayer({ tracks, projectId }) {
         setCurrentlyPlayingId(projectId);
       }
     },
-    [
-      currentIndex,
-      isPlaying,
-      projectId,
-      currentlyPlayingId,
-      setCurrentlyPlayingId,
-    ]
+    [currentIndex, isPlaying, projectId, currentlyPlayingId, setCurrentlyPlayingId],
   );
 
   // Handle seeking
   const handleSeek = useCallback(
     (trackKey, time) => {
-      const trackIndex = tracks.findIndex(t => t._key === trackKey);
+      const trackIndex = tracks.findIndex((t) => t._key === trackKey);
       if (trackIndex === -1) return; // can't find track
       const audio = audioRef.current;
       if (!audio) return; // no audio object
       // Update progress for track in state
-      setTrackProgresses(prev => ({
+      setTrackProgresses((prev) => ({
         ...prev,
         [trackKey]: time,
       }));
@@ -86,7 +86,7 @@ export default function AudioPlayer({ tracks, projectId }) {
         }
       }
     },
-    [tracks, currentIndex]
+    [tracks, currentIndex],
   );
 
   // Handle previous track
@@ -120,7 +120,7 @@ export default function AudioPlayer({ tracks, projectId }) {
       audio.src = track.url;
       // Optionally reset progress visually, or keep existing state
       // Keeping existing state allows resuming if track is re-selected
-      setTrackProgresses(prev => ({
+      setTrackProgresses((prev) => ({
         ...prev,
         [track._key]: prev[track._key] || 0, // Initialize progress if not set
       }));
@@ -130,7 +130,7 @@ export default function AudioPlayer({ tracks, projectId }) {
 
     const handleMetadataLoaded = () => {
       // get the progress for the current track
-      const storedProgress = trackProgresses[track._key] || 0;
+      const storedProgress = trackProgressesRef[track._key] || 0;
       if (
         audio.src === track.url && // current track
         storedProgress > 0 && // the track has progressed
@@ -155,7 +155,7 @@ export default function AudioPlayer({ tracks, projectId }) {
     };
 
     const handleEnded = () => {
-      setTrackProgresses(prev => ({
+      setTrackProgresses((prev) => ({
         ...prev,
         [track._key]: 0,
       }));
@@ -164,7 +164,7 @@ export default function AudioPlayer({ tracks, projectId }) {
 
     const updateTime = () => {
       if (audio.src === track.url && !audio.seeking) {
-        setTrackProgresses(prev => ({
+        setTrackProgresses((prev) => ({
           ...prev,
           [track._key]: audio.currentTime,
         }));
@@ -176,27 +176,42 @@ export default function AudioPlayer({ tracks, projectId }) {
     // Remove previous listener before adding new one to prevent duplicates
     // Note: Defining handleEnded inside means a new function instance each time.
     // The cleanup function handles removal correctly.
-    audio.addEventListener('loadedmetadata', handleMetadataLoaded);
-    audio.addEventListener('canplay', handleCanPlay);
-    audio.addEventListener('ended', handleEnded);
+    audio.addEventListener("loadedmetadata", handleMetadataLoaded);
+    audio.addEventListener("canplay", handleCanPlay);
+    audio.addEventListener("ended", handleEnded);
+
+    const safePause = () => {
+      const pending = playPromiseRef.current;
+      if (pending) {
+        pending.then(() => audio.pause()).catch(() => {});
+      } else {
+        audio.pause();
+      }
+    };
 
     const attemptPlay = () => {
       if (!isReadyRef.current || audio.src !== track.url) return;
 
       const playPromise = audio.play();
 
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            clearInterval(intervalRef.current);
-            intervalRef.current = setInterval(updateTime, 50);
-          })
-          .catch(error => {
-            console.error(`Error playing track ${track._key}:`, error);
-            setIsPlaying(false);
-            clearInterval(intervalRef.current);
-          });
-      }
+      if (playPromise === undefined) return;
+
+      playPromiseRef.current = playPromise;
+      playPromise
+        .then(() => {
+          playPromiseRef.current = null;
+          clearInterval(intervalRef.current);
+          intervalRef.current = setInterval(updateTime, 50);
+        })
+        .catch((error) => {
+          playPromiseRef.current = null;
+          clearInterval(intervalRef.current);
+          if (error.name === "AbortError") {
+            return;
+          }
+          console.error(`Error playing track ${track._key}:`, error);
+          setIsPlaying(false);
+        });
     };
 
     // --- Playback and Interval Control ---
@@ -205,22 +220,22 @@ export default function AudioPlayer({ tracks, projectId }) {
       if (isReadyRef.current && audio.src === track.url) {
         attemptPlay();
       } else {
-        audio.pause();
+        safePause();
         clearInterval(intervalRef.current);
       }
     } else {
-      audio.pause();
+      safePause();
       clearInterval(intervalRef.current);
     }
 
     // --- Cleanup ---
     return () => {
-      audio.removeEventListener('loadedmetadata', handleMetadataLoaded);
-      audio.removeEventListener('canplay', handleCanPlay);
-      audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener("loadedmetadata", handleMetadataLoaded);
+      audio.removeEventListener("canplay", handleCanPlay);
+      audio.removeEventListener("ended", handleEnded);
       clearInterval(intervalRef.current);
     };
-  }, [currentIndex, tracks, isPlaying, trackProgresses, handleNextTrack]);
+  }, [currentIndex, tracks, isPlaying, handleNextTrack]);
 
   useEffect(() => {
     // If another player starts playing (currentlyPlayingId is set and is not our ID)
@@ -251,7 +266,7 @@ export default function AudioPlayer({ tracks, projectId }) {
   }
 
   return (
-    <div className={`tracklist${isPlaying ? ' is-playing' : ''}`}>
+    <div className={`tracklist${isPlaying ? " is-playing" : ""}`}>
       <h4 className="tracks-title">Tracks</h4>
       {tracks.length > 0 &&
         tracks.map((track, idx) => {
@@ -269,11 +284,7 @@ export default function AudioPlayer({ tracks, projectId }) {
               <div
                 className="track-divider"
                 style={{
-                  opacity: isPlaying
-                    ? isCurrent || idx === currentIndex + 1
-                      ? 1
-                      : 0.4
-                    : 1,
+                  opacity: isPlaying ? (isCurrent || idx === currentIndex + 1 ? 1 : 0.4) : 1,
                 }}
               />
 
@@ -293,11 +304,7 @@ export default function AudioPlayer({ tracks, projectId }) {
       <div
         className="track-divider"
         style={{
-          opacity: isPlaying
-            ? currentIndex !== tracks.length - 1
-              ? 0.4
-              : 1
-            : 1,
+          opacity: isPlaying ? (currentIndex !== tracks.length - 1 ? 0.4 : 1) : 1,
         }}
       />
     </div>
@@ -305,32 +312,17 @@ export default function AudioPlayer({ tracks, projectId }) {
 }
 
 const TrackItem = React.memo(
-  ({
-    track,
-    duration,
-    isCurrent,
-    isPlaying,
-    progress,
-    onTrackSelect,
-    index,
-    onSeek,
-  }) => {
-    const formatDuration = seconds => {
+  ({ track, duration, isCurrent, isPlaying, progress, onTrackSelect, index, onSeek }) => {
+    const formatDuration = (seconds) => {
       const minutes = Math.floor(seconds / 60);
       const remainingSeconds = Math.round(seconds % 60);
-      return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+      return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
     };
 
-    const handleClick = useCallback(
-      () => onTrackSelect(index),
-      [onTrackSelect, index]
-    );
-    const handleSeekRequest = useCallback(
-      time => onSeek(track._key, time),
-      [onSeek, track._key]
-    );
+    const handleClick = useCallback(() => onTrackSelect(index), [onTrackSelect, index]);
+    const handleSeekRequest = useCallback((time) => onSeek(track._key, time), [onSeek, track._key]);
 
-    const trackBoxClasses = `track-box${isPlaying ? (isCurrent ? '' : ' dim') : ''}`;
+    const trackBoxClasses = `track-box${isPlaying ? (isCurrent ? "" : " dim") : ""}`;
 
     return (
       <motion.div
@@ -343,11 +335,7 @@ const TrackItem = React.memo(
           onClick={handleClick}
           className="play-pause-mobile"
           type="button"
-          aria-label={
-            isPlaying && isCurrent
-              ? `Pause ${track.title}`
-              : `Play ${track.title}`
-          }
+          aria-label={isPlaying && isCurrent ? `Pause ${track.title}` : `Play ${track.title}`}
         >
           {isPlaying && isCurrent ? <Pause size={16} /> : <Play size={16} />}
         </button>
@@ -357,13 +345,9 @@ const TrackItem = React.memo(
             onClick={handleClick}
             className="play-pause"
             type="button"
-            aria-label={
-              isPlaying && isCurrent
-                ? `Pause ${track.title}`
-                : `Play ${track.title}`
-            }
+            aria-label={isPlaying && isCurrent ? `Pause ${track.title}` : `Play ${track.title}`}
           >
-            {isPlaying && isCurrent ? 'PAUSE' : 'PLAY'}
+            {isPlaying && isCurrent ? "PAUSE" : "PLAY"}
           </button>
         </div>
         <span className="track-time">
@@ -379,7 +363,7 @@ const TrackItem = React.memo(
         />
       </motion.div>
     );
-  }
+  },
 );
 
-TrackItem.displayName = 'TrackItem';
+TrackItem.displayName = "TrackItem";
